@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- sectionType.page3 = 'sectionCertificazioniSubSectionList' -->
+<th:block th:fragment="content">
+    <section class="it-categories-area pt-0 pb-95">
+        <div class="container">
+
+            <div th:if="${section.testo != null and !section.testo.isEmpty()}" th:utext="${section.testo}" class="mb-40 text-center"></div>
+
+            <div class="row row-cols-xxl-4 row-cols-xl-3 row-cols-lg-3 row-cols-md-2 row-cols-sm-2 row-cols-1 gx-35"
+                 th:if="${section.hasSubsections()}">
+                <div class="col" th:each="sub : ${section.subsection}">
+                    <div class="it-categories-item item-style-1 text-center">
+                        <a th:href="@{'/' + ${sub.url}}" class="d-block">
+                            <img th:if="${sub.logo != null and !sub.logo.isEmpty()}"
+                                 th:src="${config.imagesRepositoryWeb + sub.logo}" th:alt="${sub.titolo}"
+                                 class="mb-15" style="max-height:72px; width:auto;"/>
+                            <span th:unless="${sub.logo != null and !sub.logo.isEmpty()}"><i class="fas fa-certificate font-72"></i></span>
+                            <h6 class="mb-0" th:text="${sub.titolo}">Certificazione</h6>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-light text-center" th:if="${!section.hasSubsections()}">
+                Nessuna certificazione disponibile al momento.
+            </div>
+        </div>
+    </section>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- sectionType.page3 = 'sectionFullSubSectionList' (full width, senza sidebar)
+     Ricostruita con le card corso reali di Educeet (it-course-item). -->
+<th:block th:fragment="content">
+    <section class="pb-100">
+        <div class="container">
+
+            <div th:if="${section.testo != null and !section.testo.isEmpty()}" th:utext="${section.testo}" class="mb-40"></div>
+
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 gx-35" th:if="${section.hasSubsections()}">
+                <div class="col mb-35" th:each="sub : ${section.subsection}">
+                    <div class="it-course-item">
+                        <div class="it-course-thumb z-index-1 border-radius-20" th:if="${sub.logo != null and !sub.logo.isEmpty()}">
+                            <a th:href="@{'/' + ${sub.url}}">
+                                <img class="w-100" th:src="${config.imagesRepositoryWeb + sub.logo}" th:alt="${sub.titolo}"/>
+                            </a>
+                        </div>
+                        <div class="it-course-content p-relative">
+                            <h5 class="it-course-title mb-20">
+                                <a class="border-line" th:href="@{'/' + ${sub.url}}" th:text="${sub.titolo}">Sottosezione</a>
+                            </h5>
+                            <p class="mb-0" th:if="${sub.riassunto != null and !sub.riassunto.isEmpty()}" th:text="${sub.riassunto}">Descrizione</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-light text-center" th:if="${!section.hasSubsections()}">
+                Nessuna sottosezione disponibile al momento.
+            </div>
+        </div>
+    </section>
+</th:block>
+</body>
+</html>

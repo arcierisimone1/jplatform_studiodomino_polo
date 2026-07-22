@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{manager/layout/template}">
+<head>
+    <title>CMS - Immagini</title>
+    <style>
+        .fm-sidebar { width:220px; min-height:400px; border-right:1px solid var(--bs-border-color); padding:8px 0; flex-shrink:0; }
+        .fm-main { flex:1; min-width:0; }
+        .fm-wrapper { display:flex; }
+        .tree-item { padding:5px 12px; font-size:13px; border-left:3px solid transparent; }
+        .tree-item:hover { background:var(--bs-light); border-left-color:var(--bs-primary); }
+        .tree-item a { color:var(--bs-body-color); text-decoration:none; display:block; }
+        .tree-item.active { background:var(--bs-primary-bg-subtle); border-left-color:var(--bs-primary); font-weight:600; }
+        .tree-children { padding-left:14px; margin-left:14px; border-left:1px dashed var(--bs-border-color); }
+        .file-card-fm { cursor:pointer; transition:box-shadow .2s; }
+        .file-card-fm:hover { box-shadow:0 4px 15px rgba(0,0,0,.1); }
+        .file-card-fm.selected { border-color:var(--bs-primary) !important; opacity:.8; }
+        .file-thumb { height:100px; display:flex; align-items:center; justify-content:center; overflow:hidden; border-radius:6px; background:var(--bs-light); }
+        .file-thumb img { max-width:100%; max-height:100px; object-fit:cover; }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <script th:inline="javascript">
+        var currentFolder = /*[[${currentFolder}]]*/ '1';
+    </script>
+
+    <div class="page-header">
+        <div class="page-block">
+            <div class="row align-items-center">
+                <div class="col-md-12">
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/admin}">Home</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/admin/filemanager/1}">Media Library</a></li>
+                        <li class="breadcrumb-item active">Immagini</li>
+                    </ul>
+                </div>
+                <div class="col-md-12">
+                    <div class="page-header-title">
+                        <h2 class="mb-0">Immagini — <span th:text="${currentFolderObj?.nome ?: 'Root'}">Root</span></h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="row my-2 align-items-center">
+                <div class="col">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <a th:href="@{/admin/filemanager/1}" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Media Library
+                        </a>
+                        <a th:href="@{'/admin/filemanager/images/' + ${currentFolder}}"
+                           class="btn btn-sm btn-outline-secondary" title="Aggiorna">
+                            <i class="fas fa-sync"></i>
+                        </a>
+                        <button class="btn btn-sm btn-outline-success"
+                                onclick="FileManager.apriForm('/admin/filemanager/images/new/'+currentFolder,'Nuova immagine')">
+                            <i class="fas fa-image"></i> Nuova immagine
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="selezionaTutto()">
+                            <i class="fas fa-check-square"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-danger btn-sm" id="btnCancella"
+                                style="display:none" onclick="cancellaSelezionati()">
+                            <i class="fas fa-trash me-1"></i> Cancella selezionati
+                        </button>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <input type="text" id="searchInput" class="form-control form-control-sm"
+                           placeholder="Cerca immagini..." style="width:200px">
+                </div>
+            </div>
+
+            <div class="fm-wrapper mt-3">
+                <div class="fm-sidebar d-none d-lg-block">
+                    <div class="tree-item" th:classappend="${currentFolder == '1'} ? 'active'">
+                        <a th:href="@{/admin/filemanager/images/1}">
+                            <i class="fas fa-home me-1 text-primary"></i> Root
+                        </a>
+                    </div>
+                    <div class="tree-children">
+                        <div th:each="f : ${allFolders}" class="tree-item"
+                             th:classappend="${currentFolder == f.id.toString()} ? 'active'">
+                            <a th:href="@{'/admin/filemanager/images/' + ${f.id}}">
+                                <i class="fas fa-folder me-1 text-warning"></i>
+                                <span th:text="${f.nome}">Cartella</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fm-main ps-3">
+                    <div class="row g-3" id="griglia">
+
+                        <!-- SOTTOCARTELLE -->
+                        <div th:each="sf : ${subfolders}"
+                             class="col-6 col-md-4 col-lg-3 col-xl-2"
+                             th:id="'fold' + ${sf.id}"
+                             th:attr="data-tipo='folder', data-id=${sf.id}, data-nome=${sf.nome}">
+                            <div class="card file-card-fm border">
+                                <div class="card-body p-2">
+                                    <div class="file-thumb mb-2"
+                                         th:data-id="${sf.id}"
+                                         onclick="location.href='/admin/filemanager/images/'+this.dataset.id">
+                                        <i class="fas fa-folder fa-3x text-warning"></i>
+                                    </div>
+                                    <h6 class="mb-0 text-truncate" style="font-size:12px" th:text="${sf.nome}">Cartella</h6>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- IMMAGINI -->
+                        <div th:each="imm : ${images}"
+                             class="col-6 col-md-4 col-lg-3 col-xl-2"
+                             th:id="'imm' + ${imm.id}"
+                             th:attr="data-tipo='immagine', data-id=${imm.id}, data-nome=${imm.name}">
+                            <div class="card file-card-fm border">
+                                <div class="card-body p-2">
+                                    <div class="d-flex align-items-center justify-content-between mb-2">
+                                        <div class="form-check m-0">
+                                            <input type="checkbox" class="form-check-input inpt_c1" th:value="${imm.id}">
+                                        </div>
+                                        <div class="dropdown">
+                                            <a class="btn btn-link btn-sm p-0 dropdown-toggle arrow-none"
+                                               href="#" data-bs-toggle="dropdown">
+                                                <i class="material-icons-two-tone f-16">more_vert</i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-end">
+                                                <a class="dropdown-item" href="javascript:void(0)"
+                                                   th:data-id="${imm.id}"
+                                                   onclick="FileManager.apriForm('/admin/filemanager/images/'+this.dataset.id+'/edit/'+currentFolder,'Modifica immagine')">
+                                                    <i class="fas fa-edit me-2"></i>Modifica
+                                                </a>
+                                                <a class="dropdown-item text-danger" href="javascript:void(0)"
+                                                   th:data-id="${imm.id}"
+                                                   onclick="cancellaImmagine(this.dataset.id)">
+                                                    <i class="fas fa-trash me-2"></i>Elimina
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="file-thumb mb-2"
+                                         th:data-src="${config.imagesRepositoryWeb + imm.fullpath}"
+                                         th:data-nome="${imm.name}"
+                                         onclick="apriLightbox(this.dataset.src, this.dataset.nome)"
+                                         style="cursor:pointer">
+                                        <img th:src="${config.imagesRepositoryWeb + imm.fullpath}"
+                                             th:alt="${imm.name}"
+                                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+                                             style="border-radius:4px">
+                                        <div style="display:none;align-items:center;justify-content:center;width:100%;height:100%">
+                                            <i class="fas fa-image fa-2x text-muted"></i>
+                                        </div>
+                                    </div>
+                                    <h6 class="mb-0 text-truncate" style="font-size:11px" th:text="${imm.name}">nome</h6>
+                                    <small class="text-muted" th:text="${imm.KSize + ' Kb'}">0 Kb</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div th:if="${#lists.isEmpty(subfolders) and #lists.isEmpty(images)}"
+                             class="col-12 text-center py-5 text-muted">
+                            <i class="fas fa-images fa-3x mb-3"></i>
+                            <p>Nessuna immagine</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<th:block layout:fragment="scripts">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var s = document.getElementById('searchInput');
+            if (s) s.addEventListener('input', function() {
+                var q = this.value.toLowerCase();
+                document.querySelectorAll('[data-nome]').forEach(function(el) {
+                    el.style.display = (el.getAttribute('data-nome')||'').toLowerCase().includes(q) ? '' : 'none';
+                });
+            });
+        });
+    </script>
+</th:block>
+
+</body>
+</html>

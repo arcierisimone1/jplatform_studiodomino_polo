@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="it"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{manager/layout/template}">
+<body>
+
+<div layout:fragment="content">
+
+  <div class="row">
+
+    <div class="col-12 col-md-3">
+      <section class="card card-info" style="border-radius: 15px; overflow: hidden; border: none;">
+        <header class="card-header" style="background-color: #3EC9D6; border-bottom: none; padding: 15px 20px;">
+          <div class="card-actions">
+            <a href="#" class="card-action card-action-toggle" data-card-toggle="" style="color: #fff;"></a>
+          </div>
+          <h2 class="card-title" style="color: #fff; font-weight: bold;">Gestione Mail Account</h2>
+          <p class="card-subtitle" style="color: rgba(255, 255, 255, 0.9);">Informazioni e parametri</p>
+        </header>
+        <div class="card-body" style="background: #fff; padding: 20px;">
+          <p>Gestisci qui gli account email e PEC utilizzati dalla piattaforma per l'invio e la ricezione dei messaggi.</p>
+        </div>
+      </section>
+    </div>
+
+    <div class="col-12 col-md-9 mt-3 mt-md-0">
+      <section class="card card-info" style="border-radius: 15px; overflow: hidden; border: none;">
+        <header class="card-header" style="background-color: #3EC9D6; border-bottom: none; padding: 15px 20px;">
+          <div class="card-actions">
+            <a href="#" class="card-action card-action-toggle" data-card-toggle style="color: #fff;"></a>
+          </div>
+          <h2 class="card-title" style="color: #fff; font-weight: bold;">Elenco configurazioni</h2>
+          <p class="card-subtitle" style="color: rgba(255, 255, 255, 0.9);">I dati possono essere creati, modificati e cancellati.</p>
+        </header>
+        <div class="card-body">
+
+          <div class="right-wrapper text-right mb-3">
+            <a th:href="@{/admin/account/new}" class="btn btn-info" rel="highslide-iframe">
+              <i class="fas fa-file-medical"></i> <span class="btn-text">Crea nuovo</span>
+            </a>
+            <a href="javascript:void(0);" class="btn btn-info" onclick="CancellaAccountMultiplaAjax()">
+              <i class="fas fa-trash-alt"></i> <span class="btn-text">Cancella selezionati</span>
+            </a>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped mb-0" id="tabellaAccount">
+              <thead>
+              <tr>
+                <th style="width:5%">
+                  <input type="checkbox" class="chSel_all inpt_c2"/>
+                </th>
+                <th>Descrizione</th>
+                <th class="d-none d-lg-table-cell">Tipologia</th>
+                <th>Azioni</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr th:if="${#lists.isEmpty(elencoAccount)}">
+                <td colspan="4" class="text-center text-muted">Nessun account configurato.</td>
+              </tr>
+              <tr th:each="account : ${elencoAccount}">
+                <td class="check">
+                  <input type="checkbox" name="row_sel"
+                         th:id="${'AnagRow' + account.id}"
+                         class="inpt_c2"
+                         th:value="${account.id}"/>
+                </td>
+                <td>
+                  <a title="Modifica"
+                     th:href="@{/admin/account/{id}(id=${account.id})}"
+                     rel="highslide-iframe"
+                     th:text="${account.descrizione}">Descrizione</a>
+                  <input type="hidden"
+                         th:id="${'row_' + account.id}"
+                         th:value="${account.id}"/>
+                </td>
+                <td class="d-none d-lg-table-cell" th:text="${account.tipoAccount}">EMAIL</td>
+                <td>
+                  <a title="Modifica"
+                     th:href="@{/admin/account/{id}(id=${account.id})}"
+                     rel="highslide-iframe">
+                    <i class="fas fa-pencil-alt"></i>
+                  </a>
+                  &nbsp;&nbsp;
+                  <a href="javascript:void(0);"
+                     th:onclick="|CancellaAccountSingoloAjax(${account.id})|"
+                     class="text-danger"
+                     title="Cancella">
+                    <i class="far fa-trash-alt"></i>
+                  </a>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </section>
+    </div>
+
+  </div>
+  <script th:inline="javascript">
+    // Gestione "Seleziona Tutti"
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('chSel_all')) {
+            const checkboxes = document.querySelectorAll('input[name="row_sel"]');
+            checkboxes.forEach(cb => cb.checked = e.target.checked);
+        }
+    });
+
+    // 1. CANCELLAZIONE SINGOLA
+    function CancellaAccountSingoloAjax(id) {
+        confirmAction('Sei sicuro di voler eliminare questo account email?', function() {
+            eseguiEliminazioneAccount([id]);
+        });
+    }
+
+    // 2. CANCELLAZIONE MULTIPLA
+    function CancellaAccountMultiplaAjax() {
+        const selezionati = Array.from(document.querySelectorAll('input[name="row_sel"]:checked'))
+                                 .map(cb => cb.value);
+
+        if (selezionati.length === 0) {
+            confirmAction('Nessun account selezionato. Seleziona almeno una riga per procedere.', function() {});
+
+            setTimeout(() => {
+                const btnAnnulla = document.querySelector('.modal-footer button:not(.btn-danger):not(.btn-primary)');
+                if (btnAnnulla) btnAnnulla.style.display = 'none';
+            }, 100);
+        } else {
+            confirmAction('Sei sicuro di voler eliminare i ' + selezionati.length + ' account selezionati?', function() {
+                eseguiEliminazioneAccount(selezionati);
+            });
+        }
+    }
+
+    // 3. FUNZIONE FETCH UNIFICATA
+    function eseguiEliminazioneAccount(ids) {
+    const formData = new URLSearchParams();
+    ids.forEach(id => formData.append('ids[]', id));
+    fetch('/admin/account/delete-multiplo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString()
+    })
+    .then(r => r.text())
+    .then(result => {
+        if (result === 'OK') location.reload();
+        else alert('Errore durante la cancellazione.');
+    })
+    .catch(err => console.error('Errore:', err));
+}
+  </script>
+
+</div>
+</body>
+</html>

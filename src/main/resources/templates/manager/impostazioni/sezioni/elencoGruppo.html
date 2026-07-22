@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{manager/layout/template}">
+<head><title>Elenco Gruppi</title></head>
+<body>
+<div layout:fragment="content">
+
+  <div class="row">
+    <div class="col-12 col-md-3">
+      <section class="card card-success" style="border-radius: 15px; overflow: hidden; border: none;">
+        <header class="card-header" style="background-color: #2CA87F; border-bottom: none; padding: 15px 20px;">
+          <div class="card-actions">
+            <a href="#" class="card-action card-action-toggle" data-card-toggle="" style="color: #fff;"></a>
+          </div>
+          <h2 class="card-title" style="color: #fff; font-weight: bold;">Gestione Gruppi</h2>
+          <p class="card-subtitle" style="color: rgba(255, 255, 255, 0.9);">Informazioni e parametri</p>
+        </header>
+        <div class="card-body" style="background: #fff; padding: 20px;">
+          <p>I gruppi definiscono i livelli di accesso degli utenti alla piattaforma.
+            Ogni gruppo può avere fino a 10 livelli di autorizzazione configurabili.</p>
+        </div>
+      </section>
+    </div>
+
+    <div class="col-12 col-md-9 mt-3 mt-md-0">
+      <section class="card card-success" style="border-radius: 15px; overflow: hidden; border: none;">
+        <header class="card-header" style="background-color: #2CA87F; border-bottom: none; padding: 15px 20px;">
+          <div class="card-actions">
+            <a href="#" class="card-action card-action-toggle" data-card-toggle style="color: #fff;"></a>
+          </div>
+          <h2 class="card-title" style="color: #fff; font-weight: bold;">Elenco</h2>
+          <p class="card-subtitle" style="color: rgba(255, 255, 255, 0.9);">I dati possono essere creati, modificati e cancellati.</p>
+        </header>
+        <div class="card-body">
+
+          <div class="right-wrapper text-right mb-3">
+            <a th:href="@{/admin/impostazioni/gruppi/new}" class="btn btn-success">
+              <i class="fas fa-file-medical"></i> <span class="btn-text">Crea nuovo</span>
+            </a>
+            <a href="javascript:void(0);" onclick="cancellaMultiplo()" class="btn btn-success">
+              <i class="fas fa-trash-alt"></i> <span class="btn-text">Cancella selezionati</span>
+            </a>
+          </div>
+
+          <table id="elencoGruppi" class="table table-responsive-lg table-bordered table-striped mb-0">
+            <thead>
+            <tr>
+              <th style="width:5%;"><input type="checkbox" id="selAll"/></th>
+              <th>Nome gruppo</th>
+              <th class="d-none d-lg-table-cell">Accesso pubblico</th>
+              <th class="d-none d-lg-table-cell">Data modifica</th>
+              <th class="d-none d-lg-table-cell">Iscritti</th>
+              <th>Azioni</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="gruppo : ${elencoGruppo}">
+              <td class="text-center">
+                <input type="checkbox" name="row_sel" th:value="${gruppo.id}" class="inpt_c2"/>
+              </td>
+              <td>
+                <a th:href="@{/admin/impostazioni/gruppi/{id}/open(id=${gruppo.id})}">
+                  <span th:text="${gruppo.nome + ' - ID: ' + gruppo.id}"></span>
+                </a>
+              </td>
+              <td class="d-none d-lg-table-cell">
+                <span th:if="${'1'.equals(gruppo.l1)}" style="color: black; font-weight: bold;">Attivo</span>
+                <span th:if="${'0'.equals(gruppo.l1)}" style="color: black;">Disattivo</span>
+                <span th:if="${gruppo.l1 == null or gruppo.l1.isEmpty()}" style="color: #666; font-style: italic;">Indefinito</span>
+              </td>
+              <td class="d-none d-lg-table-cell" th:text="${gruppo.datamodifica}"></td>
+              <td class="d-none d-lg-table-cell" th:text="${gruppo.iscritti}"></td>
+              <td>
+                <a th:href="@{/admin/impostazioni/gruppi/{id}/open(id=${gruppo.id})}" title="Modifica">
+                  <i class="fas fa-pencil-alt"></i>
+                </a>
+                &nbsp;&nbsp;
+                <a href="javascript:void(0);" class="text-danger" th:onclick="|cancellaGruppo(${gruppo.id})|" title="Cancella">
+                  <i class="far fa-trash-alt"></i>
+                </a>
+              </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(elencoGruppo)}">
+              <td colspan="6" class="text-center text-muted">Nessun gruppo presente.</td>
+            </tr>
+            </tbody>
+          </table>
+
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script th:inline="javascript">
+    // Seleziona/deseleziona tutti
+    document.getElementById('selAll').addEventListener('change', function() {
+      document.querySelectorAll('input[name="row_sel"]').forEach(cb => cb.checked = this.checked);
+    });
+
+    // 1. CANCELLAZIONE SINGOLA
+    function cancellaGruppo(id) {
+      confirmAction('Sei sicuro di voler eliminare questo gruppo?', function() {
+          eseguiCancellazioneGruppiAjax([id]);
+      });
+    }
+
+    // 2. CANCELLAZIONE MULTIPLA
+    function cancellaMultiplo() {
+      const selezionati = [...document.querySelectorAll('input[name="row_sel"]:checked')]
+              .map(cb => cb.value);
+
+      if (selezionati.length === 0) {
+        // Avviso senza tasto Annulla
+        confirmAction('Nessun gruppo selezionato. Seleziona almeno una riga per procedere.', function() {});
+
+        setTimeout(() => {
+            const btnAnnulla = document.querySelector('.modal-footer button:not(.btn-danger):not(.btn-primary)');
+            if (btnAnnulla) btnAnnulla.style.display = 'none';
+        }, 100);
+      } else {
+        // Conferma per eliminazione multipla
+        confirmAction('Sei sicuro di voler eliminare i ' + selezionati.length + ' gruppi selezionati?', function() {
+            eseguiCancellazioneGruppiAjax(selezionati);
+        });
+      }
+    }
+
+    // 3. FUNZIONE FETCH (Unificata)
+    function eseguiCancellazioneGruppiAjax(ids) {
+      const params = new URLSearchParams();
+      // Usiamo ids[] come standard per i nostri controller
+      ids.forEach(id => params.append('ids[]', id));
+
+      fetch('/admin/impostazioni/gruppi/delete-multiplo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params.toString()
+      })
+      .then(r => r.text())
+      .then(res => {
+        if (res === 'OK') {
+            location.reload();
+        } else {
+            // Se proprio serve un alert per errori tecnici, lo usiamo,
+            // ma il flusso principale è ora tutto grafico.
+            alert('Errore durante la cancellazione.');
+        }
+      })
+      .catch(err => console.error("Errore tecnico AJAX:", err));
+    }
+  </script>
+</div>
+</body>
+</html>

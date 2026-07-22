@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="it"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{manager/layout/template}">
+<body>
+<div layout:fragment="content">
+
+    <div th:switch="${content.section.sectionType.page2}">
+
+        <th:block th:case="'dettaglioContenuto'">
+            <th:block th:replace="~{manager/cms/contenuti/dettaglioContenuto :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'dettaglioContenutoHome'">
+            <th:block th:replace="~{manager/cms/contenuti/dettaglioContenutoHome :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'dettaglioNewsletter'">
+            <th:block th:replace="~{manager/cms/contenuti/dettaglioNewsletter :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'dettaglioContenutoCorso'">
+            <th:block th:replace="~{manager/cms/contenuti/dettaglioContenutoCorso :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'dettaglioUnitaFormativa'">
+            <th:block th:replace="~{manager/cms/contenuti/dettaglioUnitaFormativa :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'dettaglioCalendarioCorso'">
+            <th:block th:replace="~{manager/cms/contenuti/dettaglioCalendarioCorso :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="*">
+            <th:block th:replace="~{manager/cms/contenuti/dettaglioContenuto :: content}"></th:block>
+        </th:block>
+
+    </div>
+
+</div>
+</body>
+</html>

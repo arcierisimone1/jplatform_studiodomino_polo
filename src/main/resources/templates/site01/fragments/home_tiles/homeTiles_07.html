@@ -1,0 +1,156 @@
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="homeTiles_07">
+
+  <!-- Intro: Polo didattico + Mondo Università Telematiche -->
+  <section class="it-about-area fix p-relative pt-130 pb-80">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6 order-1 order-lg-0">
+          <div class="it-about-thumb z-index-1 border-radius-20">
+            <div class="owl-carousel owl-theme tm-owl-carousel-1col" data-nav="false" data-dots="true">
+              <div class="item"><img class="w-100" th:src="@{site01/images/about/pegaso.png}" alt=""/></div>
+              <div class="item"><img class="w-100" th:src="@{site01/images/about/mercatorum.png}" alt=""/></div>
+            </div>
+          </div>
+          <h3 class="mt-15">Polo didattico Università Telematiche</h3>
+          <p class="mb-10"><strong>Studiodomino</strong> è E-Learning Center Point dell'Università Telematica Pegaso ed Ei-Point dell'Università Telematica delle camere di commercio italiane Unimercatorum</p>
+          <a th:href="@{/page/1/341/1/2020/Universita}" class="border-line">Le università →</a>
+        </div>
+        <div class="col-lg-6 order-0 order-lg-1">
+          <h2 class="it-section-title">Mondo <span class="z-index-1">Università Telematiche</span></h2>
+          <p class="mb-30">Le università telematiche sono riconosciuta dal MIUR attraverso il Decreto Ministeriale del 20 aprile 2006 (GU n. 118 del 23-5-2006 – Suppl. Ordinario n. 125). Il nostro centro di orientamento e consulenza seguirà lo studente per tutto il percorso universitario, dagli adempimenti burocratici relativi alla prima immatricolazione, alla preparazione di ogni esame universitario fino alla stesura della tesi di laurea.</p>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="it-about-list-box">
+                <ul>
+                  <li><a th:href="@{/page/1/347/1/2020/Laurea_Triennale}">Laurea triennale</a></li>
+                  <li><a th:href="@{/page/1/348/1/2020/Laurea_Magistrale}">Laurea magistrale</a></li>
+                  <li><a th:href="@{/page/1/349/1/2020/Laurea_a_Ciclo_unico}">Laurea ciclo unico</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="it-about-list-box">
+                <ul>
+                  <li><a th:href="@{/page/1/350/1/2020/Master_1_Livello}">Master 1° livello</a></li>
+                  <li><a th:href="@{/page/1/351/1/2020/Master_2_Livello}">Master 2° livello</a></li>
+                  <li><a th:href="@{/page/1/352/1/2020/Perfezionamento}">Alta Formazione</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 punti di forza -->
+  <section class="it-categories-area pt-0 pb-80">
+    <div class="container">
+      <div class="row row-cols-md-3 row-cols-1 gx-0">
+        <div class="col">
+          <div class="it-categories-item item-style-1 text-center theme-bg" style="padding:30px;">
+            <span><i class="fa fa-certificate font-48"></i></span>
+            <h5 class="text-white mb-0" style="margin-top:15px;">Costi bassi</h5>
+            <p class="text-white mb-0">Agevolazioni economiche in convenzione</p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="it-categories-item item-style-2 text-center" style="padding:30px;background:#1F2432;">
+            <span><i class="fa fa-map-marker font-48"></i></span>
+            <h5 class="text-white mb-0" style="margin-top:15px;">Corsi di laurea</h5>
+            <p class="text-white mb-0">29 corsi di laurea tra cui scegliere</p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="it-categories-item item-style-3 text-center theme-bg" style="padding:30px;">
+            <span><i class="fa fa-phone-alt font-48"></i></span>
+            <h5 class="text-white mb-0" style="margin-top:15px;">Contattaci</h5>
+            <p class="text-white mb-0">Chiama il numero 0971445096</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Notizie Mondo Università + Accordion "Università? Sì, telematica" -->
+  <section class="it-blog-area z-index-1 pb-130">
+    <div class="container">
+      <div class="row">
+
+        <div class="col-lg-6">
+          <h2 class="it-section-title mb-30">Notizie <span class="z-index-1">Mondo Università</span></h2>
+          <th:block th:if="${config != null and config.contenutiFront03 != null}">
+            <th:block th:each="articolo : ${config.contenutiFront03}">
+              <div class="it-blog-item mb-25 d-flex align-items-center" style="gap:20px;">
+                <div class="it-blog-thumb border-radius-20" style="flex:0 0 120px;">
+                  <a th:href="@{'/' + ${articolo.url}}">
+                    <img class="w-100" th:src="${config.imagesRepositoryWeb + articolo.logo}" th:alt="${articolo.titolo}"/>
+                  </a>
+                </div>
+                <div class="it-blog-content">
+                  <h6 class="it-blog-title mb-5">
+                    <a class="border-line" th:href="@{'/' + ${articolo.url}}" th:text="${articolo.titolo}">Titolo</a>
+                  </h6>
+                  <span class="d-block small text-muted" th:text="${articolo.dataVisualizzata}">Data</span>
+                  <p class="mb-0" th:text="${articolo.riassunto}">Riassunto</p>
+                </div>
+              </div>
+            </th:block>
+          </th:block>
+        </div>
+
+        <div class="col-lg-6">
+          <h2 class="it-section-title mb-30">Università? <span class="z-index-1">Sì, telematica</span></h2>
+          <div class="accordion" id="accordionLavoro">
+            <div class="card">
+              <div class="card-header theme-bg" id="accordionLavoroheadingOne">
+                <h5 class="text-white m-0" data-toggle="collapse" data-target="#accordionLavorocollapseOne" aria-expanded="true" aria-controls="accordionLavorocollapseOne" style="cursor:pointer;">
+                  Studiare online
+                </h5>
+              </div>
+              <div id="accordionLavorocollapseOne" class="collapse show" aria-labelledby="accordionLavoroheadingOne" data-parent="#accordionLavoro">
+                <div class="card-body">
+                  <div class="it-about-thumb thumb-overlay z-index-1 border-radius-20 mb-15">
+                    <img class="w-100" th:src="@{site01/images/about/pegaso.png}" alt=""/>
+                    <a class="it-about-thumb-icon pulse-white popup-video" data-lightbox-gallery="youtube-video" href="https://www.youtube.com/watch?v=3_3s9Gv1-LU" style="cursor:pointer">
+                      <svg width="11" height="14" viewBox="0 0 11 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10.5 7.93782C11.1667 7.55292 11.1667 6.59067 10.5 6.20577L1.5 1.00962C0.833333 0.624718 0 1.10584 0 1.87564V12.2679C0 13.0378 0.833333 13.5189 1.5 13.134L10.5 7.93782Z" fill="currentcolor"/>
+                      </svg>
+                    </a>
+                  </div>
+                  <p class="mb-0">Studiare online è semplice e offre la massima flessibilità. Ovunque tu sia, potrai accedere alla tua area studio semplicemente inserendo le tue credenziali. Per chi è già nel mondo del lavoro, frequentare un'università statale diventa davvero impossibile a causa della frequenza ai corsi e alla partecipazione costante alle attività dell'ateneo. <strong>Le università telematiche portano lo studio a casa tua: dove vuoi e quando vuoi</strong>, infatti, l'Università Pegaso è l'unico ateneo telematico ad aver creato un'app sviluppata completamente per la navigazione mobile. Grazie alla nostra piattaforma e-learning avrai una preparazione completa: videolezioni, dispense, test di autovalutazione, simulazioni d'esame.</p>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header theme-bg" id="accordionLavoroheadingTwo">
+                <h5 class="text-white m-0" data-toggle="collapse" data-target="#accordionLavorocollapseTwo" aria-expanded="false" aria-controls="accordionLavorocollapseTwo" style="cursor:pointer;">
+                  Orientamento e Tutoraggio
+                </h5>
+              </div>
+              <div id="accordionLavorocollapseTwo" class="collapse" aria-labelledby="accordionLavoroheadingTwo" data-parent="#accordionLavoro">
+                <div class="card-body">
+                  <p class="mb-0">Avrai un tutor sempre al tuo fianco, che ti guiderà fornendoti supporto informativo e didattico. Gli <strong>orientatori didattici di Studiodomino ti seguiranno in tutte le fasi di iscrizione e studio</strong>, accompagnandoti e guidandoti nelle scelte giuste per ottenere con successo i tuoi risultati. Prima dell'iscrizione valutiamo, gratuitamente, il tuo Curriculum e gli esami che hai già sostenuto anche in caso di rinuncia agli studi.</p>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header theme-bg" id="accordionLavoroheadingThree">
+                <h5 class="text-white m-0" data-toggle="collapse" data-target="#accordionLavorocollapseThree" aria-expanded="false" aria-controls="accordionLavorocollapseThree" style="cursor:pointer;">
+                  Costi bassi per grandi risultati
+                </h5>
+              </div>
+              <div id="accordionLavorocollapseThree" class="collapse" aria-labelledby="accordionLavoroheadingThree" data-parent="#accordionLavoro">
+                <div class="card-body">
+                  <p class="mb-0">Effettuando l'iscrizione tramite <strong>il nostro E-Learning Center Point avrai uno sconto di 1.000 € sulla retta annuale</strong> (2.000€ anzichè 3.000 €). Inoltre, sono previste convenzioni per le forze armate, i disabili, le donne in gravidanza e i giovani dai 17 ai 20 anni.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</th:block>

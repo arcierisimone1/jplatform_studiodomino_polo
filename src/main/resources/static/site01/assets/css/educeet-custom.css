@@ -1,0 +1,61 @@
+.it-about-experience-box h5 span {
+    font-size: 40px !important;
+}
+
+.it-hero-7-stats-box .stats-number span {
+    font-size: 60px;
+    margin-bottom: 0;
+    line-height: 1;
+    color: var(--it-common-white);
+    letter-spacing: 0px !important;
+}
+
+.it-contact-2-input-box .contact__select .nice-select,
+.it-signup-input-wrap .contact__select .nice-select {
+    padding-left: 30px !important;
+}
+
+
+.it-shop-filter .nice-select {
+    padding-left: 20px !important;
+    padding-right: 45px !important;
+    padding-top: 0px !important;
+}
+
+
+.slider-range div {
+    background: #03594e !important;
+}
+
+
+.it-shop-widget-filter-btn {
+    background: #03594e;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+
+/* priceing tab */
+.it-marker-tab {
+  position: relative;
+}
+
+#lineMarker {
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  height: 3px;
+  background-color: #FE8235 !important; /* or your active tab color */
+  transition: all 0.3s ease;
+  display: none; /* hidden initially, JS will show it */
+}
+
+.it-price-tab-wrap .it-price-tab ul li button.active {
+  z-index: 1;
+  position: relative;
+  color: var(--it-common-white);
+  background-color: #FE8235 !important;
+  border-radius: 50px;
+
+}

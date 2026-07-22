@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="it"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{manager/layout/template}">
+<body>
+
+<div layout:fragment="content">
+
+    <div id="form_a_errors" class="alert alert-danger" style="display:none"></div>
+
+    <form th:action="@{/admin/crm/lead/{id}/inviaSms(id=${registroLead.id})}"
+          method="post"
+          id="registrolead"
+          class="form-bordered">
+
+        <input type="hidden" name="id"               th:value="${registroLead.id}"/>
+        <input type="hidden" name="idutente" th:value="${registroLead.idutente}" id="idUtenteLead"/>
+        <input type="hidden" name="idleadstore"      th:value="${registroLead.idleadstore}"/>
+        <input type="hidden" name="idamministratore" th:value="${registroLead.idamministratore}"/>
+        <input type="hidden" name="store"            th:value="${registroLead.store}"/>
+        <input type="hidden" name="direzione"        th:value="${registroLead.direzione}"/>
+        <input type="hidden" name="stato"            value="4"/>
+        <input type="hidden" name="metatag"          value=""/>
+
+        <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h4 class="mb-0">Invio messaggio SMS LEAD CRM</h4>
+
+                <div class="d-flex gap-2">
+                    <button type="button"
+                            onclick="inviaForm(event)"
+                            class="btn btn-primary">
+                        <i class="ti ti-send me-1"></i> Invia SMS
+                    </button>
+
+                    <a th:href="@{/admin/crm/dashboard}"
+                       class="btn btn-outline-secondary">
+                        <i class="ti ti-x me-1"></i> Esci
+                    </a>
+                </div>
+            </div>
+
+            <div class="card-body">
+
+                <div th:if="${registroLead.id != null and registroLead.id != -1}"
+                     class="alert alert-success">
+                    <strong>Perfetto!</strong> Ho inviato il messaggio SMS come da te richiesto.
+                </div>
+
+                <div class="tab-content">
+                    <div id="tab_sms_definizione" class="tab-pane fade show active">
+
+                        <div class="card border mb-4">
+                            <div class="card-body">
+                                <h4 class="mb-4">
+                                    Invio SMS a utente
+                                    <code th:text="'#' + ${registroLead.id}"></code>
+                                </h4>
+
+                                <div class="row g-3">
+                                    <div class="col-lg-8">
+                                        <label class="form-label">Destinatario</label>
+                                        <div class="form-control-plaintext border rounded px-3 py-2 bg-light">
+                                            <span th:text="${registroLead.utente != null ? registroLead.utente.nome : ''}"></span>
+                                            <span th:text="${registroLead.utente != null ? registroLead.utente.cognome : ''}"></span>
+
+                                            <span th:if="${registroLead.utente != null and registroLead.utente.email != null and registroLead.utente.email != ''}">
+                                                | <span th:text="${registroLead.utente.email}"></span>
+                                            </span>
+
+                                            <span th:if="${registroLead.utente != null and registroLead.utente.telefono2 != null and registroLead.utente.telefono2 != ''}">
+                                                | <span th:text="${registroLead.utente.telefono2}"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-2">
+                                        <label for="l2" class="form-label">Seleziona mittente</label>
+                                        <select class="form-select obbligatorio" name="l2" id="l2">
+                                            <option value=""   th:selected="${registroLead.l2 == null or registroLead.l2 == ''}">Non specificato</option>
+                                            <option value="SI" th:selected="${registroLead.l2 == 'SI'}">SMS Basic</option>
+                                            <option value="TI" th:selected="${registroLead.l2 == 'TI'}">SMS Classic</option>
+                                            <option value="GP" th:selected="${registroLead.l2 == 'GP'}">SMS con mittente noto</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-lg-2">
+                                        <label for="data" class="form-label">Data invio</label>
+                                        <input type="text"
+                                               class="form-control dataBase obbligatorio notAutocomplete"
+                                               id="data"
+                                               name="data"
+                                               th:value="${registroLead.data}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border mb-4"
+                             th:if="${registroLead.idutente == null or registroLead.idutente <= 0}">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <h4 class="mb-0">Anagrafica</h4>
+
+                                    <div class="d-flex gap-2">
+                                        <a th:if="${registroLead.utente != null and registroLead.utente.id != null and registroLead.utente.id > 0}"
+                                           th:href="@{/admin/crm/utenti/{id}(id=${registroLead.utente.id})}"
+                                           class="btn btn-primary btn-sm">
+                                            <i class="ti ti-user me-1"></i> Dettaglio anagrafica
+                                        </a>
+
+                                        <a href="javascript:void(0)"
+                                           onclick="resetAnagraficaLeadCRM()"
+                                           class="btn btn-primary btn-sm">
+                                            <i class="ti ti-user-minus me-1"></i> Rimuovi anagrafica
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label" for="ricercaUtenteNuovoLead">Ricerca anagrafica</label>
+                                        <input type="text"
+                                               id="ricercaUtenteNuovoLead"
+                                               class="form-control js-autocomplete"
+                                               data-url="/admin/crm/utenti/search"
+                                               placeholder="Scrivi Cognome o Nome...">
+                                    </div>
+
+                                    <div class="col-lg-6">
+                                        <label class="form-label" for="utentenome">Nome</label>
+                                        <input type="text"
+                                               class="form-control obbligatorio"
+                                               id="utentenome"
+                                               name="utente.nome"
+                                               th:value="${registroLead.utente != null ? registroLead.utente.nome : ''}"/>
+                                        <input type="hidden"
+                                               id="utenteid"
+                                               name="utente.id"
+                                               th:value="${registroLead.utente != null ? registroLead.utente.id : ''}"/>
+                                    </div>
+
+                                    <div class="col-lg-6">
+                                        <label class="form-label" for="utentecognome">Cognome</label>
+                                        <input type="text"
+                                               class="form-control obbligatorio"
+                                               id="utentecognome"
+                                               name="utente.cognome"
+                                               th:value="${registroLead.utente != null ? registroLead.utente.cognome : ''}"/>
+                                    </div>
+
+                                    <div class="col-lg-4">
+                                        <label class="form-label" for="utenteemail">Email</label>
+                                        <input type="text"
+                                               class="form-control obbligatorio"
+                                               id="utenteemail"
+                                               name="utente.email"
+                                               th:value="${registroLead.utente != null ? registroLead.utente.email : ''}"/>
+                                    </div>
+
+                                    <div class="col-lg-4">
+                                        <label class="form-label" for="utentetelefono">Telefono</label>
+                                        <input type="text"
+                                               class="form-control"
+                                               id="utentetelefono"
+                                               name="utente.telefono"
+                                               th:value="${registroLead.utente != null ? registroLead.utente.telefono : ''}"/>
+                                    </div>
+
+                                    <div class="col-lg-4">
+                                        <label class="form-label" for="utentetelefono2">Telefono 2</label>
+                                        <input type="text"
+                                               class="form-control"
+                                               id="utentetelefono2"
+                                               name="utente.telefono2"
+                                               th:value="${registroLead.utente != null ? registroLead.utente.telefono2 : ''}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <h4 class="mb-0">Messaggio SMS</h4>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <textarea name="notalead"
+                                                  id="notalead"
+                                                  class="tinymce5basic form-control"
+                                                  rows="12"
+                                                  th:text="${registroLead.notalead}"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </form>
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            // Avvio automatico dell'editor usando la TUA funzione globale
+            if (typeof initTinyMCE === 'function') {
+                if (typeof tinymce !== 'undefined' && tinymce.get('notalead')) {
+                    tinymce.get('notalead').remove();
+                }
+                initTinyMCE('#notalead');
+            }
+        });
+
+        function inviaForm(e) {
+            if (e) e.preventDefault();
+
+            var form = document.getElementById('registrolead');
+
+            // Sincronizzazione TinyMCE (la tua logica sicura)
+            if (typeof tinymce !== 'undefined') {
+                try {
+                    if (typeof tinymce.triggerSave === 'function') {
+                        tinymce.triggerSave();
+                    } else if (tinymce.editors && tinymce.editors.length > 0) {
+                        tinymce.editors.forEach(function(editor) { editor.save(); });
+                    }
+                } catch(err) { console.warn('TinyMCE save error:', err); }
+            }
+
+            if (!form.checkValidity()) {
+                form.classList.add('was-validated');
+                if (typeof PNotify !== 'undefined') {
+                    new PNotify({
+                        title: 'Attenzione!',
+                        text: 'Alcuni campi obbligatori richiedono un tuo intervento!',
+                        type: 'error'
+                    });
+                }
+                return false;
+            }
+
+            form.classList.add('was-validated');
+            form.submit();
+            return true;
+        }
+    </script>
+
+</div>
+</body>
+</html>

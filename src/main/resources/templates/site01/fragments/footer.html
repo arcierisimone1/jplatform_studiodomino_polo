@@ -1,0 +1,202 @@
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="footer">
+    <style>
+        /* Il testo CMS di config.home.text1 include un proprio logo incorporato:
+           lo nascondiamo per non mostrare due loghi in colonna 1. */
+        .it-footer-widget-text img { display: none !important; }
+
+        /* Barra di copyright in fondo: sottile, un'unica riga, tutto bianco.
+           Il contenuto CMS (config.home.text4) porta con sé un suo vecchio
+           wrapper .footer-bottom/.container/.row/.col-sm-6: lo neutralizziamo
+           qui (invece di dipendere dal fatto che il testo in DB sia "pulito")
+           così il layout non si rompe qualunque cosa contenga il campo. */
+        .it-copyright-area.it-copyright-ptb {
+            padding-top: 14px;
+            padding-bottom: 14px;
+        }
+        .it-copyright-area .it-copyright-left {
+            text-align: left !important;
+            padding-right: 30px;
+        }
+        .it-copyright-area .it-copyright-left .footer-bottom,
+        .it-copyright-area .it-copyright-left .footer-bottom .container {
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            max-width: none;
+        }
+        .it-copyright-area .it-copyright-left .row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 15px;
+            margin: 0;
+        }
+        .it-copyright-area .it-copyright-left .row > [class*="col-"] {
+            width: auto;
+            max-width: none;
+            flex: 0 0 auto;
+            padding: 0;
+        }
+        .it-copyright-area .it-copyright-left .footer-paragraph {
+            margin: 0;
+        }
+        .it-copyright-area,
+        .it-copyright-area * {
+            color: #ffffff !important;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        @media (max-width: 991px) {
+            .it-copyright-area .it-copyright-left,
+            .it-copyright-area .it-copyright-left .row {
+                text-align: center !important;
+                justify-content: center;
+                padding-right: 0;
+            }
+            .it-copyright-area .it-copyright-menu {
+                text-align: center !important;
+            }
+        }
+    </style>
+    <footer>
+        <div class="it-footer-wrap fix">
+
+            <div class="it-footer-area z-index-1 pt-130 pb-80" th:style="'background-image: url(' + @{/site01/images/footer-bg.png} + ')'">
+                <img class="it-footer-shape-3" data-parallax='{"y": -200, "smoothness": 30}' th:src="@{site01/images/footer-bg.png}" alt=""/>
+                <div class="it-footer-border"><span></span></div>
+                <div class="container">
+                    <div class="row">
+
+                        <!-- Colonna 1: logo + info contatto (home.text1) + CTA -->
+                        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-50">
+                            <div class="it-footer-widget it-footer-col-1-1">
+                                <div class="it-footer-widget-logo mb-30">
+                                    <a th:href="@{/}"><img th:src="@{site01/images/logo_principale.png}" alt="Studiodomino Formazione"/></a>
+                                </div>
+                                <div class="it-footer-widget-text" th:utext="${config.home.text1}"></div>
+                                <div class="it-footer-widget-btn">
+                                    <a th:href="@{/front/370/Contatti}" class="it-btn-yellow theme-bg">
+                  <span>
+                    <span class="text-1">Contattaci</span>
+                    <span class="text-2">Contattaci</span>
+                  </span>
+                                        <i>
+                                            <svg width="16" height="15" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M15.0544 8.1364C15.4058 7.78492 15.4058 7.21508 15.0544 6.8636L9.3268 1.13604C8.97533 0.784567 8.40548 0.784567 8.05401 1.13604C7.70254 1.48751 7.70254 2.05736 8.05401 2.40883L13.1452 7.5L8.05401 12.5912C7.70254 12.9426 7.70254 13.5125 8.05401 13.864C8.40548 14.2154 8.97533 14.2154 9.3268 13.864L15.0544 8.1364ZM0.417969 7.5V8.4H14.418V7.5V6.6H0.417969V7.5Z" fill="currentcolor"/>
+                                            </svg>
+                                        </i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Colonna 2: Sicurezza e Privacy (sezioniFront menu1==5, 3 livelli) -->
+                        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-50">
+                            <div class="it-footer-widget it-footer-col-1-2">
+                                <h4 class="it-footer-widget-title">Sicurezza e Privacy</h4>
+                                <div class="it-footer-widget-menu">
+                                    <ul>
+                                        <th:block th:if="${config != null and config.sezioniFront != null}">
+                                            <th:block th:each="sezione : ${config.sezioniFront}">
+                                                <li th:if="${sezione.menu1 == '5' and sezione.menu2 == '0'}">
+                                                    <a th:href="@{'/' + ${sezione.url}}" th:text="${sezione.titolo}">Titolo</a>
+                                                </li>
+                                                <th:block th:if="${sezione.emptySubsection == false}">
+                                                    <th:block th:each="sezione2 : ${sezione.subsection}">
+                                                        <li th:if="${sezione2.menu1 == '5' and sezione2.menu2 == '0'}">
+                                                            <a th:href="@{'/' + ${sezione2.url}}" th:text="${sezione2.titolo}">Titolo</a>
+                                                        </li>
+                                                        <th:block th:if="${sezione2.emptySubsection == false}">
+                                                            <th:block th:each="sezione3 : ${sezione2.subsection}">
+                                                                <li th:if="${sezione3.menu1 == '5' and sezione3.menu2 == '0'}">
+                                                                    <a th:href="@{'/' + ${sezione3.url}}" th:text="${sezione3.titolo}">Titolo</a>
+                                                                </li>
+                                                            </th:block>
+                                                        </th:block>
+                                                    </th:block>
+                                                </th:block>
+                                            </th:block>
+                                        </th:block>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Colonna 3: Ultime Notizie (contenutiFront01, prime 3) -->
+                        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-50">
+                            <div class="it-footer-widget it-footer-col-1-3">
+                                <h4 class="it-footer-widget-title">Ultime Notizie</h4>
+                                <div class="it-footer-widget-menu">
+                                    <ul>
+                                        <th:block th:if="${config != null and config.contenutiFront01 != null}">
+                                            <th:block th:each="articolo, iterStat : ${config.contenutiFront01}" th:if="${iterStat.index < 3}">
+                                                <li><a th:href="@{'/' + ${articolo.url}}" th:text="${articolo.titolo}">Titolo notizia</a></li>
+                                            </th:block>
+                                        </th:block>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Colonna 4: contatti + social -->
+                        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-50 d-flex justify-content-lg-end">
+                            <div>
+                                <h4 class="it-footer-widget-title">Contatti</h4>
+                                <div class="it-footer-widget-contact mb-25">
+                                    <ul>
+                                        <li><span>Telefono:</span><a href="tel:0971445096">0971 445096</a></li>
+                                        <li><span>Email:</span><a href="mailto:info@studiodominoweb.com">info@studiodominoweb.com</a></li>
+                                        <li><span>Sede:</span><a target="_blank" href="https://maps.google.com/?q=Via+del+Gallitello,+74,+85100+Potenza+PZ">Via del Gallitello, 74 - Potenza (PZ)</a></li>
+                                    </ul>
+                                </div>
+                                <div class="it-footer-widget-social">
+                                    <a href="#" aria-label="Facebook">
+                                        <svg width="20" height="19" viewBox="0 0 20 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M15.5654 0.183594H18.5978L11.9747 7.75136L19.7656 18.0509H13.6671L8.88712 11.8058L3.42357 18.0509H0.386253L7.46894 9.9544L0 0.183594H6.25335L10.5697 5.89174L15.5654 0.183594ZM14.5006 16.2382H16.1798L5.33837 1.90156H3.53475L14.5006 16.2382Z" fill="#1F2432"/>
+                                        </svg>
+                                    </a>
+                                    <a href="#" aria-label="Instagram">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M14.6802 1.23535H6.03271C3.64478 1.23535 1.70898 3.17115 1.70898 5.55908V14.2065C1.70898 16.5945 3.64478 18.5303 6.03271 18.5303H14.6802C17.0681 18.5303 19.0039 16.5945 19.0039 14.2065V5.55908C19.0039 3.17115 17.0681 1.23535 14.6802 1.23535Z" stroke="#1F2432" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M13.8122 9.33833C13.9189 10.058 13.796 10.793 13.4609 11.4388C13.1258 12.0846 12.5956 12.6083 11.9458 12.9354C11.2959 13.2625 10.5594 13.3763 9.8411 13.2608C9.12279 13.1452 8.45921 12.806 7.94476 12.2916C7.4303 11.7771 7.09116 11.1135 6.97557 10.3952C6.85999 9.67692 6.97384 8.94046 7.30094 8.29058C7.62804 7.64071 8.15173 7.11052 8.79752 6.77543C9.44331 6.44034 10.1783 6.31742 10.898 6.42414C11.6321 6.53299 12.3117 6.87507 12.8365 7.39984C13.3613 7.9246 13.7033 8.60423 13.8122 9.33833Z" stroke="#1F2432" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M15.1094 5.12695H15.1221" stroke="#1F2432" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </a>
+                                    <a href="#" aria-label="LinkedIn">
+                                        <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M14.148 7.08887C15.6999 7.08887 17.1881 7.70533 18.2855 8.80264C19.3828 9.89994 19.9992 11.3882 19.9992 12.94V19.7664H16.0984V12.94C16.0984 12.4228 15.893 11.9267 15.5272 11.5609C15.1614 11.1951 14.6653 10.9896 14.148 10.9896C13.6308 10.9896 13.1347 11.1951 12.7689 11.5609C12.4031 11.9267 12.1977 12.4228 12.1977 12.94V19.7664H8.29688V12.94C8.29688 11.3882 8.91334 9.89994 10.0106 8.80264C11.108 7.70533 12.5962 7.08887 14.148 7.08887Z" fill="white" stroke="#1F2432" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M5.37734 8.0625H1.47656V19.7648H5.37734V8.0625Z" fill="white" stroke="#1F2432" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M3.42695 5.13613C4.50412 5.13613 5.37734 4.26291 5.37734 3.18574C5.37734 2.10857 4.50412 1.23535 3.42695 1.23535C2.34978 1.23535 1.47656 2.10857 1.47656 3.18574C1.47656 4.26291 2.34978 5.13613 3.42695 5.13613Z" fill="white" stroke="#1F2432" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- copyright-area (home.text4 nel JSP era testo libero in fondo: qui lo uso come extra riga se presente) -->
+            <div class="it-copyright-area it-copyright-ptb theme-bg z-index-1">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-7 col-md-12 mb-lg-0 mb-15">
+                            <div class="it-copyright-left style-2">
+                                <div th:if="${config.home.text4 != null and config.home.text4 != ''}" th:utext="${config.home.text4}"></div>
+                                <p class="mb-0" th:unless="${config.home.text4 != null and config.home.text4 != ''}">Copyright © Studiodomino srl - Tutti i diritti riservati</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-5 col-md-12">
+                            <div class="it-copyright-menu text-lg-end">
+                                <a class="border-line" th:href="@{/front/35/Privacy_Policy}">Privacy policy</a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+</th:block>

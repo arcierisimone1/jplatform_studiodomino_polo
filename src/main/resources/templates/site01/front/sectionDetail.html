@@ -1,0 +1,106 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{site01/layout/template}">
+<body>
+<main layout:fragment="content">
+
+    <!-- ========================================
+         PAGE TITLE + BREADCRUMBS
+         ======================================== -->
+    <th:block th:replace="~{site01/fragments/page_title :: sectionTitle}"></th:block>
+
+    <!-- ========================================
+         SWITCH CONTENUTO SEZIONE
+         Routing basato su section.sectionType.page3
+         ======================================== -->
+    <div th:switch="${section.sectionType.page3}">
+
+        <!-- Sezione Web Standard-->
+        <th:block th:case="'sectionWeb'">
+            <th:block th:replace="~{site01/fragments/section_frag/sectionWeb :: content}"></th:block>
+        </th:block>
+
+        <!-- "default" nel CMS = pagina di testo semplice, stesso fragment di sectionWeb -->
+        <th:block th:case="'default'">
+            <th:block th:replace="~{site01/fragments/section_frag/sectionWeb :: content}"></th:block>
+        </th:block>
+
+        <!-- Sezione Web Standard-->
+        <th:block th:case="'sectionContatti'">
+            <th:block th:replace="~{site01/fragments/section_frag/sectionContatti :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'sectionWebSidebar'">
+            <th:block th:replace="~{site01/fragments/section_frag/sectionWebSidebar :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'sectionListSidebar'">
+            <th:block th:replace="~{site01/fragments/section_frag/sectionListSidebar :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'sectionListSidebarBlog'">
+            <th:block th:replace="~{site01/fragments/section_frag/sectionListSidebarBlog :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'sectionNewsDisplay'">
+            <th:block th:replace="~{site01/fragments/section_frag/sectionNewsDisplay :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'sectionFaqSidebar'">
+            <th:block th:replace="~{site01/fragments/section_frag/sectionFaqSidebar :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'sectionGallerySidebar'">
+            <th:block th:replace="~{site01/fragments/section_frag/sectionGallerySidebar :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'sectionCalendarioSidebar'">
+            <th:block th:replace="~{site01/fragments/section_frag/sectionCalendarioSidebar :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'sectionCatalogoSidebar'">
+            <th:block th:replace="~{site01/fragments/section_frag/sectionCatalogoSidebar :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'sectionCatalogoAltaFormazioneSidebar'">
+            <th:block th:replace="~{site01/fragments/section_frag/sectionCatalogoAltaFormazioneSidebar :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'sectionCatalogoQualificaSidebar'">
+            <th:block th:replace="~{site01/fragments/section_frag/sectionCatalogoQualificaSidebar :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'sectionCatalogoLaureaSidebar'">
+            <th:block th:replace="~{site01/fragments/section_frag/sectionCatalogoLaureaSidebar :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'sectionSubSectionList'">
+            <th:block th:replace="~{site01/fragments/section_frag/sectionSubSectionList :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'sectionFullSubSectionList'">
+            <th:block th:replace="~{site01/fragments/section_frag/sectionFullSubSectionList :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'sectionCertificazioniSubSectionList'">
+            <th:block th:replace="~{site01/fragments/section_frag/sectionCertificazioniSubSectionList :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'sectionContentsIconList'">
+            <th:block th:replace="~{site01/fragments/section_frag/sectionContentsIconList :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'sectionTeam'">
+            <th:block th:replace="~{site01/fragments/section_frag/sectionTeam :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'sectionAzienda'">
+            <th:block th:replace="~{site01/fragments/section_frag/sectionAzienda :: content}"></th:block>
+        </th:block>
+
+    </div>
+
+</main>
+</body>
+</html>

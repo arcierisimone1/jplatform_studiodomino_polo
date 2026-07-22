@@ -1,0 +1,91 @@
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="content">
+    <!-- ========================================
+         FRAGMENT: Section Contatti
+         sectionType.page3 = 'sectionContatti'
+         Ricostruita sul markup reale del tema Educeet
+         (it-contact-3-area / it-contact-3-style-2), come in
+         ContactArea.tsx + ContactFormOne.tsx del template originale.
+         ======================================== -->
+
+    <!-- contact-area-start -->
+    <div class="it-contact-3-area it-contact-3-style-2 pt-100 pb-100">
+        <div class="container">
+
+            <div class="row mb-40" th:if="${section.testo != null and !section.testo.isEmpty()}">
+                <div class="col-lg-8 mx-auto text-center">
+                    <div th:utext="${section.testo}"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- COLONNA SINISTRA: info di contatto -->
+                <div class="col-lg-6 order-1 order-lg-0">
+                    <div class="it-contact-3-left mt-10">
+                        <h5 class="it-details-title">Siamo a tua disposizione <br> per ogni informazione</h5>
+                        <div th:if="${section.riassunto != null and !section.riassunto.isEmpty()}" th:utext="${section.riassunto}" class="mb-20"></div>
+
+                        <div class="it-contact-list mt-25 mb-40">
+                            <span>Contatti</span>
+                            <ul>
+                                <li>
+                                    <span>
+                                        <i class="fal fa-map-marker-alt"></i>
+                                    </span>
+                                    <a href="https://maps.google.com/?q=Via+del+Gallitello,+74,+85100+Potenza+PZ" target="_blank">
+                                        Via del Gallitello, 74 <br> 85100 Potenza (PZ)
+                                    </a>
+                                </li>
+                                <li>
+                                    <span>
+                                        <i class="fal fa-phone-alt"></i>
+                                    </span>
+                                    <a href="tel:+390971445096">
+                                        0971 445096
+                                    </a>
+                                </li>
+                                <li>
+                                    <span>
+                                        <i class="fal fa-envelope"></i>
+                                    </span>
+                                    <a href="mailto:info@studiodominoweb.com">info@studiodominoweb.com</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <span>Seguici</span>
+                        <div class="it-contact-social">
+                            <a href="https://www.facebook.com/studiodominoaltaformazione" target="_blank" aria-label="Facebook">
+                                <i class="fa-brands fa-facebook-f"></i>
+                            </a>
+                            <a href="https://www.instagram.com/studiodomino_formazione/" target="_blank" aria-label="Instagram">
+                                <i class="fa-brands fa-instagram"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COLONNA DESTRA: form "Richiedi Informazioni" -->
+                <div class="col-lg-6 order-0 order-lg-1">
+                    <div class="it-contact-3-right">
+                        <div class="it-contact-3-form-box">
+                            <h4 class="it-section-title">Richiedi Informazioni</h4>
+                            <div th:replace="~{site01/fragments/jspUser/contatti2 :: contatti2(oggettoRichiesta='Informazioni generali', idOggettoRichiesta=0)}"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- contact-area-end -->
+
+    <!-- Divider: Google Map -->
+    <section class="pt-0" th:if="${section.text1 != null and !section.text1.isEmpty()}">
+        <div class="container-fluid pt-0 pb-0">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div th:utext="${section.text1}"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</th:block>

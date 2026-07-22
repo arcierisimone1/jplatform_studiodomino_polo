@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="it"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{manager/layout/template}">
+<body>
+
+<div layout:fragment="content">
+
+  <div class="row">
+
+    <!-- SINISTRA: RICERCA -->
+    <div class="col-12 col-md-3">
+      <section class="card card-warning">
+        <header class="card-header" style="background-color: #f39c12; border-color: #f39c12; border-radius: 15px 15px 0 0;">
+          <div class="card-actions">
+            <a href="#" class="card-action card-action-toggle" data-card-toggle="" style="color: #fff;"></a>
+          </div>
+          <h2 class="card-title" style="color: #fff; font-weight: bold;">Ricerca contatti</h2>
+          <p class="card-subtitle" style="color: rgba(255, 255, 255, 0.8);">Indicare i parametri di ricerca dei contatti desiderati</p>
+        </header>
+
+        <form th:action="@{/admin/crm/utenti/cerca}"
+              method="post"
+              id="ricercaAvanzataContatti"
+              class="notAutocomplete">
+
+          <div class="card-body">
+
+            <div class="row form-group">
+              <div class="col-lg-12">
+                <div class="form-group">
+                  <a th:href="@{/admin/crm/utenti/new}"
+                     class="mb-1 mt-1 mr-1 btn btn-primary btn-lg btn-block">
+                    <i class="fas fa-file-medical"></i> <span class="btn-text">Nuova Anagrafica</span>
+                  </a>
+                </div>
+              </div>
+
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label class="col-form-label" for="email">Email</label>
+                  <input type="text" class="form-control" id="email" name="email"
+                         th:value="${ricerca != null ? ricerca.email : ''}">
+                </div>
+              </div>
+
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label class="col-form-label" for="nome">Nome</label>
+                  <input type="text" class="form-control" id="nome" name="nome"
+                         th:value="${ricerca != null ? ricerca.nome : ''}">
+                </div>
+              </div>
+
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label class="col-form-label" for="cognome">Cognome</label>
+                  <input type="text" class="form-control" id="cognome" name="cognome"
+                         th:value="${ricerca != null ? ricerca.cognome : ''}">
+                </div>
+              </div>
+
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label class="col-form-label" for="codicefiscale">Codice fiscale</label>
+                  <input type="text" class="form-control" id="codicefiscale" name="codicefiscale"
+                         th:value="${ricerca != null and ricerca.codicefiscale != '0' ? ricerca.codicefiscale : ''}">
+                </div>
+              </div>
+            </div>
+
+            <div class="row form-group">
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label class="col-form-label" for="telefono">Telefono/Cellulare</label>
+                  <input type="text" class="form-control" id="telefono" name="telefono"
+                         th:value="${ricerca != null ? ricerca.telefono : ''}">
+                </div>
+              </div>
+
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label class="col-form-label" for="indirizzo">Indirizzo</label>
+                  <input type="text" class="form-control" id="indirizzo" name="indirizzo"
+                         th:value="${ricerca != null ? ricerca.indirizzo : ''}">
+                </div>
+              </div>
+
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label class="col-form-label" for="comune">Comune</label>
+                  <input type="text" class="form-control" id="comune" name="comune"
+                         th:value="${ricerca != null and ricerca.comune != '0' ? ricerca.comune : ''}">
+                </div>
+              </div>
+
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label class="col-form-label" for="pec">PEC</label>
+                  <input type="text" class="form-control" id="pec" name="pec"
+                         th:value="${ricerca != null ? ricerca.pec : ''}">
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <footer class="card-footer text-right">
+            <a th:href="@{/admin/crm/utenti}" class="btn btn-primary">Pulisci</a>
+            <button class="btn btn-primary" type="submit">Ricerca contatti</button>
+          </footer>
+
+        </form>
+      </section>
+    </div>
+
+    <!-- DESTRA: ELENCO -->
+    <div class="col-12 col-md-9 mt-3 mt-md-0">
+      <section class="card card-warning">
+        <header class="card-header" style="background-color: #f39c12; border-color: #f39c12; border-radius: 15px 15px 0 0; padding: 15px 20px;">
+          <div class="card-actions">
+            <a href="#" class="card-action card-action-toggle" data-card-toggle="" style="color: #fff;"></a>
+          </div>
+          <h2 class="card-title" style="color: #fff; font-weight: bold; margin: 0;">Elenco contatti</h2>
+          <p class="card-subtitle" style="color: rgba(255, 255, 255, 0.9); margin-top: 5px;">Sono visualizzati i contatti richiesti. I contatti possono essere modificati e cancellati.</p>
+        </header>
+
+        <div class="card-body">
+
+          <div class="right-wrapper text-right mb-2">
+            <a href="javascript:void(0);"
+               class="btn btn-sm btn-primary"
+               onclick="cancellaSelezionati()">
+              <i class="fas fa-trash-alt"></i> <span class="btn-text">Cancella selezionati</span>
+            </a>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-responsive-lg table-bordered table-striped mb-0">
+              <thead>
+              <tr>
+                <th style="width:5%;">
+                  <div class="th_wrapp">
+                    <input type="checkbox" class="chSel_all inpt_c2">
+                  </div>
+                </th>
+                <th><div class="th_wrapp">Cognome</div></th>
+                <th class="d-none d-lg-table-cell"><div class="th_wrapp">Contatti</div></th>
+                <th style="width:90px;" class="text-center"><div class="th_wrapp">Azioni</div></th>
+              </tr>
+              </thead>
+
+              <tbody>
+              <tr th:if="${elencoAnagrafico == null || #lists.isEmpty(elencoAnagrafico)}">
+                <td colspan="4" class="text-center text-muted py-4">Nessun contatto. Esegui una ricerca.</td>
+              </tr>
+
+              <tr th:each="r : ${elencoAnagrafico}">
+                <td class="check">
+                  <input type="checkbox" name="row_sel"
+                         th:id="'AnagRow' + ${r.id}"
+                         class="inpt_c2 row_sel"
+                         th:value="${r.id}">
+                </td>
+
+                <td>
+                  <a th:href="@{/admin/crm/utenti/{id}(id=${r.id})}">
+                    <img th:src="${r.avatar}"
+                         class="rounded-circle"
+                         style="width:35px;height:35px;object-fit:cover;margin-right:8px;border:1px solid #ddd"
+                         alt="">
+                    <span th:text="${r.cognome}">Cognome</span>
+                    <span th:text="${r.nome}">Nome</span>
+                  </a>
+                </td>
+
+                <td class="d-none d-lg-table-cell">
+                  <span th:text="${r.email}"></span>
+                  <span th:if="${r.telefono != null and r.telefono != ''}"
+                        th:text="' — ' + ${r.telefono}"></span>
+                  <span th:if="${r.telefono2 != null and r.telefono2 != ''}"
+                        th:text="' — ' + ${r.telefono2}"></span>
+                </td>
+
+                <td>
+                  <a th:href="@{/admin/crm/utenti/{id}(id=${r.id})}"
+                     class="me-2"
+                     title="Modifica">
+                    <i class="fas fa-pencil-alt"></i>
+                  </a>
+
+                  <a href="javascript:void(0);"
+                     class="text-danger"
+                     th:data-id="${r.id}"
+                     th:data-nome="${r.cognome + ' ' + r.nome}"
+                     onclick="cancellaRiga(this)"
+                     title="Cancella">
+                    <i class="far fa-trash-alt"></i>
+                  </a>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </section>
+    </div>
+
+  </div>
+
+  <script>
+    // 1. CANCELLAZIONE SINGOLA
+    function cancellaRiga(btn) {
+      var id   = btn.getAttribute('data-id');
+      var nome = btn.getAttribute('data-nome');
+      confirmAction('Sei sicuro di voler eliminare il contatto "' + nome + '"?', function() {
+        eseguiCancellazioneAjax([id]);
+      });
+    }
+
+    // 2. CANCELLAZIONE MULTIPLA
+    function cancellaSelezionati() {
+      const ids = Array.from(document.querySelectorAll('input[name="row_sel"]:checked')).map(cb => cb.value);
+      if (ids.length === 0) {
+        confirmAction('Nessun contatto selezionato. Seleziona almeno una riga per procedere.', function() {});
+        setTimeout(() => {
+          const buttons = document.querySelectorAll('.modal-footer button');
+          if (buttons.length > 1) buttons[0].style.display = 'none';
+        }, 100);
+        return;
+      }
+      confirmAction('Sei sicuro di voler eliminare i ' + ids.length + ' contatti selezionati?', function() {
+        eseguiCancellazioneAjax(ids);
+      });
+    }
+
+    // 3. FUNZIONE AJAX
+    function eseguiCancellazioneAjax(ids) {
+      const formData = new URLSearchParams();
+      ids.forEach(id => formData.append('ids[]', id));
+      fetch('/admin/crm/utenti/delete-multiplo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData
+      })
+      .then(response => response.text())
+      .then(result => {
+        if (result === 'OK') {
+          window.location.reload();
+        } else {
+          alert('Errore durante la cancellazione.');
+        }
+      })
+      .catch(error => console.error('Errore:', error));
+    }
+
+    // 4. SELEZIONA TUTTI
+    document.addEventListener('change', function(e) {
+      if (e.target.classList.contains('chSel_all')) {
+        document.querySelectorAll('input[name="row_sel"]').forEach(cb => cb.checked = e.target.checked);
+      }
+    });
+  </script>
+
+</div>
+</body>
+</html>

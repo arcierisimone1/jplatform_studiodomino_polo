@@ -1,0 +1,75 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{site01/layout/template}">
+<body>
+<main layout:fragment="content">
+
+    <!-- ========================================
+         PAGE TITLE + BREADCRUMBS
+         ======================================== -->
+    <th:block th:replace="~{site01/fragments/page_title :: documentTitle}"></th:block>
+
+    <!-- ========================================
+         SWITCH CONTENUTO DOCUMENTO
+         Routing basato su content.sectionType.page4
+         ======================================== -->
+    <div th:switch="${content.section.sectionType.page4}">
+
+        <th:block th:case="'landing'">
+            <th:block th:replace="~{site01/fragments/document_frag/landing :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'detailArticoloVario'">
+            <th:block th:replace="~{site01/fragments/document_frag/detailArticoloVario :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'dettaglioNews'">
+            <th:block th:replace="~{site01/fragments/document_frag/dettaglioNews :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'dettaglioNewsDisplay'">
+            <th:block th:replace="~{site01/fragments/document_frag/dettaglioNewsDisplay :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'dettaglioContenutoIconico'">
+            <th:block th:replace="~{site01/fragments/document_frag/dettaglioContenutoIconico :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'dettaglioCertificazioni'">
+            <th:block th:replace="~{site01/fragments/document_frag/dettaglioCertificazioni :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'dettaglioCatalogoCorso'">
+            <th:block th:replace="~{site01/fragments/document_frag/dettaglioCatalogoCorso :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'dettaglioCatalogoAltaFormazioneCorso'">
+            <th:block th:replace="~{site01/fragments/document_frag/dettaglioCatalogoAltaFormazioneCorso :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'dettaglioCatalogoQualificaCorso'">
+            <th:block th:replace="~{site01/fragments/document_frag/dettaglioCatalogoQualificaCorso :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'dettaglioCatalogoLaureaCorso'">
+            <th:block th:replace="~{site01/fragments/document_frag/dettaglioCatalogoLaureaCorso :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'dettaglioCalendarioCorso'">
+            <th:block th:replace="~{site01/fragments/document_frag/dettaglioCalendarioCorso :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'dettaglioPersona'">
+            <th:block th:replace="~{site01/fragments/document_frag/dettaglioPersona :: content}"></th:block>
+        </th:block>
+
+        <!-- Fallback: se page4 non combacia con nessun caso, mostra comunque il contenuto -->
+        <th:block th:case="*">
+            <th:block th:replace="~{site01/fragments/document_frag/default :: content}"></th:block>
+        </th:block>
+    </div>
+
+</main>
+</body>
+</html>

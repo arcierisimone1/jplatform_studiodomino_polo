@@ -1,0 +1,249 @@
+package com.jplatform_studiodomino.shared.service;
+
+import com.jplatform_studiodomino.shared.config.Configurazione;
+import com.jplatform_studiodomino.shared.entity.Gruppo;
+import com.jplatform_studiodomino.shared.entity.Site;
+import com.jplatform_studiodomino.shared.entity.Utente;
+import com.jplatform_studiodomino.shared.entity.UtenteEsterno;
+import com.jplatform_studiodomino.shared.repository.GruppoRepository;
+import com.jplatform_studiodomino.shared.repository.RuoloRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+/**
+ * Service per gestione Configurazione in sessione.
+ * Centralizza TUTTI gli accessi alla configurazione.
+ */
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class ConfigurazioneService {
+
+    private static final String CONFIG_KEY = "config";
+    private static final String REQUESTED_SITE_KEY = "requestedSiteId";
+    @Value("${jplatform.site.default.id:1}")
+    private Integer defaultSiteId;
+
+    private final SiteService siteService;
+    private final GruppoRepository gruppoRepository;
+    private final RuoloRepository ruoloRepository;
+
+    // ========================================
+    // CONFIGURAZIONE CORE
+    // ========================================
+
+    /**
+     * Ottiene Configurazione dalla sessione
+     * Se non esiste, ne crea una nuova
+     */
+    public Configurazione getConfig(HttpSession session) {
+        Configurazione config = (Configurazione) session.getAttribute(CONFIG_KEY);
+
+        if (config == null) {
+            log.debug("Configurazione non presente, creo nuova istanza");
+            config = createNewConfig();
+            session.setAttribute(CONFIG_KEY, config);
+        }
+
+        // Popola ruoli se vuoti (es. dopo primo login)
+        if (config.getRuoli() == null || config.getRuoli().isEmpty()) {
+            try {
+                config.setRuoli(ruoloRepository.findAll());
+                saveConfig(session, config);
+            } catch (Exception e) {
+                log.warn("Impossibile caricare ruoli: {}", e.getMessage());
+            }
+        }
+
+        return config;
+    }
+
+    /**
+     * Ottiene config da HttpServletRequest
+     */
+    public Configurazione getOrCreateConfiguration(HttpServletRequest request) {
+        return getConfig(request.getSession());
+    }
+
+    /**
+     * Crea una nuova Configurazione con valori di default
+     */
+    private Configurazione createNewConfig() {
+        Configurazione config = new Configurazione();
+
+        try {
+            Site defaultSite = siteService.findById(defaultSiteId);
+            if (defaultSite == null) {
+                log.error("ATTENZIONE: nessun sito trovato con id={} (da jplatform.site.default.id). " +
+                                "Verifica che esista una riga nella tabella 'site' con questo ID nel database configurato.",
+                        defaultSiteId);
+            } else {
+                config.setSito(defaultSite);
+                log.info("Sito default caricato: id={}, type={}", defaultSite.getId(), defaultSite.getType());
+            }
+        } catch (Exception e) {
+            log.error("Impossibile caricare sito default (id={}): {}", defaultSiteId, e.getMessage(), e);
+        }
+
+        // Carica ruoli
+        try {
+            config.setRuoli(ruoloRepository.findAll());
+        } catch (Exception e) {
+            log.warn("Impossibile caricare ruoli: {}", e.getMessage());
+        }
+
+        config.setLocale("it_IT");
+        return config;
+    }
+
+    /**
+     * Salva Configurazione in sessione
+     */
+    public void saveConfig(HttpSession session, Configurazione config) {
+        session.setAttribute(CONFIG_KEY, config);
+        log.debug("Configurazione salvata in sessione");
+    }
+
+    // ========================================
+    // GESTIONE SITO
+    // ========================================
+
+    /**
+     * Imposta il sito corrente
+     */
+    public void setSite(HttpSession session, Site site) {
+        Configurazione config = getConfig(session);
+        config.setSito(site);
+        saveConfig(session, config);
+        log.info("Sito impostato: id={}, type={}, accesso={}",
+                site.getId(), site.getType(), site.getAccesso());
+    }
+
+    /**
+     * Imposta il sito corrente (da HttpServletRequest)
+     */
+    public void setSite(HttpServletRequest request, Site site) {
+        setSite(request.getSession(), site);
+    }
+
+    /**
+     * Ottiene il sito corrente
+     */
+    public Site getCurrentSite(HttpSession session) {
+        Configurazione config = getConfig(session);
+        return config.getSito();
+    }
+
+    /**
+     * Ottiene il sito corrente (da HttpServletRequest)
+     */
+    public Site getCurrentSite(HttpServletRequest request) {
+        return getCurrentSite(request.getSession());
+    }
+
+    // ========================================
+    // GESTIONE UTENTE
+    // ========================================
+
+    /**
+     * Imposta l'utente amministratore loggato
+     */
+    public void setAmministratore(HttpSession session, Utente utente) {
+        Configurazione config = getConfig(session);
+        config.setAmministratore(utente);
+        saveConfig(session, config);
+        log.info("Amministratore loggato: {}", utente.getUsername());
+    }
+
+    /**
+     * Imposta l'utente esterno loggato
+     */
+    public void setUtente(HttpSession session, UtenteEsterno utente) {
+        Configurazione config = getConfig(session);
+        config.setUtente(utente);
+        saveConfig(session, config);
+        log.info("Utente loggato: {}", utente.getUsername());
+    }
+
+    /**
+     * Ottiene l'utente amministratore loggato
+     */
+    public Utente getAmministratore(HttpSession session) {
+        Configurazione config = getConfig(session);
+        return config.getAmministratore();
+    }
+
+    /**
+     * Ottiene l'utente esterno loggato
+     */
+    public UtenteEsterno getUtente(HttpSession session) {
+        Configurazione config = getConfig(session);
+        return config.getUtente();
+    }
+
+    // ========================================
+    // LOGOUT E INVALIDAZIONE
+    // ========================================
+
+    /**
+     * Logout completo - invalida sessione
+     */
+    public void invalidateSession(HttpSession session) {
+        log.info("Invalidating session");
+        session.invalidate();
+    }
+
+    /**
+     * Logout utente mantenendo sessione
+     */
+    public void logoutUtente(HttpSession session) {
+        Configurazione config = getConfig(session);
+        config.setAmministratore(null);
+        config.setUtente(null);
+        config.setGruppi(null);
+        config.setRuoli(null);
+        saveConfig(session, config);
+        log.info("Utente disconnesso");
+    }
+
+    // ========================================
+    // REQUESTED SITE (POST-LOGIN REDIRECT)
+    // ========================================
+
+    /**
+     * Memorizza sito richiesto per redirect post-login
+     */
+    public void setRequestedSite(HttpSession session, Integer siteId) {
+        Configurazione config = getConfig(session);
+        config.setRequestedSiteId(siteId);
+        saveConfig(session, config);
+        log.debug("Requested site ID memorizzato: {}", siteId);
+    }
+
+    /**
+     * Ottiene sito richiesto e lo rimuove
+     */
+    public Integer getAndClearRequestedSite(HttpSession session) {
+        Configurazione config = getConfig(session);
+        Integer siteId = config.getRequestedSiteId();
+        config.setRequestedSiteId(null);
+        saveConfig(session, config);
+        return siteId;
+    }
+
+    public List<Gruppo> getAllGruppi(String idSite) {
+        try {
+            // Usiamo findAll() come nell'AmministratoriController
+            return gruppoRepository.findAll();
+        } catch (Exception e) {
+            log.error("Errore recupero gruppi: {}", e.getMessage());
+            return java.util.Collections.emptyList();
+        }
+    }
+}

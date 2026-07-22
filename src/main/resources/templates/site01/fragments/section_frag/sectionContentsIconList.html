@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- sectionType.page3 = 'sectionContentsIconList'
+     "feature-box" non esiste nel CSS di Educeet: sostituito con un
+     semplice layout icona+testo. -->
+<th:block th:fragment="content">
+    <section class="pb-100">
+        <div class="container">
+
+            <div th:if="${section.testo != null and !section.testo.isEmpty()}" th:utext="${section.testo}" class="mb-40"></div>
+
+            <div class="row row-cols-1 row-cols-md-2 gx-35" th:if="${section.hasContenuti()}">
+                <div class="col mb-30" th:each="articolo : ${section.contenuti}">
+                    <div class="d-flex align-items-start" style="gap:15px;">
+                        <i class="fa-solid fa-circle-check" style="font-size:24px; color: var(--it-theme-1); margin-top:4px;"></i>
+                        <div>
+                            <a th:href="@{'/' + ${articolo.url}}" class="border-line d-block fw-600 mb-5" th:text="${articolo.titolo}">Titolo</a>
+                            <p th:if="${articolo.riassunto != null and !articolo.riassunto.isEmpty()}" th:text="${articolo.riassunto}" class="mb-0">Descrizione</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-light text-center" th:if="${!section.hasContenuti()}">
+                Nessun contenuto disponibile al momento.
+            </div>
+        </div>
+    </section>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!--
+  Form "Richiedi Informazioni" - conversione da _contatti2.jsp (Struts/GestioneUtenteWeb.do)
+  Posta su /contatti/invia (ContattoController), che crea un RegistroLead (CRM) e
+  reindirizza alla pagina di provenienza con esito in ${contattoOk} / ${contattoErrore}.
+  Markup allineato al tema Educeet (classi it-signup-input-wrap / it-signup-input,
+  come in ContactFormOne.tsx del template originale).
+
+  Parametri fragment:
+    oggettoRichiesta   -> testo libero salvato come oggetto della richiesta (es. 'Informazioni generali')
+    idOggettoRichiesta -> id della pagina/corso a cui si riferisce la richiesta (0 = generico)
+-->
+<div th:fragment="contatti2(oggettoRichiesta, idOggettoRichiesta)">
+
+    <form id="informazioniGeneriche" th:action="@{/contatti/invia}" method="post">
+
+        <div th:if="${contattoOk}" class="alert alert-success mb-20" role="alert">
+            Messaggio ricevuto! Ti risponderemo il prima possibile.
+        </div>
+        <div th:if="${contattoErrore}" class="alert alert-danger mb-20" role="alert" th:text="${contattoErrore}"></div>
+
+        <div class="it-signup-input-wrap">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="it-signup-input mb-40">
+                        <label>Nome</label>
+                        <input type="text" name="nome" required placeholder="Nome"/>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="it-signup-input mb-40">
+                        <label>Cognome</label>
+                        <input type="text" name="cognome" required placeholder="Cognome"/>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="it-signup-input mb-40">
+                        <label>Email</label>
+                        <input type="email" name="email" required placeholder="Email"/>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="it-signup-input mb-40">
+                        <label>Telefono</label>
+                        <input type="tel" name="telefono" required placeholder="Telefono"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="it-signup-input mb-40">
+                <label>Messaggio</label>
+                <textarea name="messaggioInformativo" required placeholder="Messaggio" style="min-height:120px;"></textarea>
+            </div>
+
+            <div class="it-signup-input mb-40">
+                <label>Quanto fa <span th:text="${captchaA}">?</span> + <span th:text="${captchaB}">?</span> ?</label>
+                <input type="text" name="captcha" required placeholder="Risultato"/>
+            </div>
+
+            <div class="mb-30 d-flex align-items-start" style="gap:10px;">
+                <input type="checkbox" name="terms_conditions" id="terms_conditions" value="1" required style="margin-top:5px;"/>
+                <label class="form_privacy mb-0" for="terms_conditions">
+                    Inviando il presente modulo autorizzo al trattamento dei miei dati personali così come
+                    indicato nell'informativa
+                    <a th:href="@{/front/35/Privacy_Policy}">Privacy</a>
+                    che dichiaro di aver visionato.
+                </label>
+            </div>
+
+            <input type="hidden" name="oggetto" th:value="${oggettoRichiesta}"/>
+            <input type="hidden" name="idoggetto" th:value="${idOggettoRichiesta}"/>
+            <input type="hidden" name="return" th:value="${currentPath}"/>
+
+            <button type="submit" class="it-btn-yellow theme-bg">
+                <span>
+                    <span class="text-1">Invia richiesta</span>
+                    <span class="text-2">Invia richiesta</span>
+                </span>
+                <i>
+                    <svg width="16" height="15" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15.0544 8.1364C15.4058 7.78492 15.4058 7.21508 15.0544 6.8636L9.3268 1.13604C8.97533 0.784567 8.40548 0.784567 8.05401 1.13604C7.70254 1.48751 7.70254 2.05736 8.05401 2.40883L13.1452 7.5L8.05401 12.5912C7.70254 12.9426 7.70254 13.5125 8.05401 13.864C8.40548 14.2154 8.97533 14.2154 9.3268 13.864L15.0544 8.1364ZM0.417969 7.5V8.4H14.418V7.5V6.6H0.417969V7.5Z" fill="currentcolor"/>
+                    </svg>
+                </i>
+            </button>
+        </div>
+    </form>
+
+</div>
+</body>
+</html>

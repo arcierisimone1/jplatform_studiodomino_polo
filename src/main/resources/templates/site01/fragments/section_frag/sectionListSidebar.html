@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- sectionType.page3 = 'sectionListSidebar'
+     Ricostruita sul markup reale del tema Educeet
+     (postbox-thumb-box / it-blog-meta / it-section-title), come in
+     BlogSidebarArea.tsx. Le classi precedenti (card, box-shadow-small,
+     hover-box, icon-feather-*, btn-hover-animation-switch) non esistono
+     nel CSS di Educeet. -->
+<th:block th:fragment="content">
+    <section class="pt-0 pb-100">
+        <div class="container">
+            <div class="row gx-35">
+                <div class="col-lg-8">
+
+                    <div th:if="${section.testo != null and !section.testo.isEmpty()}" th:utext="${section.testo}" class="mb-40"></div>
+
+                    <div th:if="${section.hasContenuti()}">
+                        <div class="postbox-thumb-box mb-70" th:each="articolo : ${section.contenuti}">
+                            <div class="postbox-main-thumb border-radius-20 mb-35" th:if="${articolo.logo != null and !articolo.logo.isEmpty()}">
+                                <a th:href="@{'/' + ${articolo.url}}">
+                                    <img class="w-100" th:src="${config.imagesRepositoryWeb + articolo.logo}" th:alt="${articolo.titolo}"/>
+                                </a>
+                            </div>
+                            <div class="postbox-content-box">
+                                <div class="it-blog-meta mb-20" th:if="${articolo.dataVisualizzata != null and !articolo.dataVisualizzata.isEmpty()}">
+                                    <span><i class="fa-solid fa-calendar-days"></i> <span th:text="${articolo.dataVisualizzata}">Data</span></span>
+                                </div>
+                                <h4 class="it-section-title">
+                                    <a class="border-line" th:href="@{'/' + ${articolo.url}}" th:text="${articolo.titolo}">Titolo</a>
+                                </h4>
+                                <div class="postbox-dsc" th:if="${articolo.riassunto != null and !articolo.riassunto.isEmpty()}">
+                                    <p class="mb-25" th:text="${articolo.riassunto}">Riassunto</p>
+                                </div>
+                                <a th:href="@{'/' + ${articolo.url}}" class="it-btn-yellow theme-bg">
+                                    <span>
+                                        <span class="text-1">Leggi di più</span>
+                                        <span class="text-2">Leggi di più</span>
+                                    </span>
+                                    <i><i class="fa-solid fa-arrow-right"></i></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:replace="~{site01/fragments/section_frag/_pagination :: nav}"></div>
+
+                    <div class="alert alert-light text-center" th:if="${!section.hasContenuti()}">
+                        Nessun contenuto disponibile al momento.
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div th:replace="~{site01/fragments/section_frag/_sidebar :: widget}"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</th:block>
+</body>
+</html>

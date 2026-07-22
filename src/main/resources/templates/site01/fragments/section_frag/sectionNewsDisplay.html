@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- sectionType.page3 = 'sectionNewsDisplay' (full width, senza sidebar) -->
+<th:block th:fragment="content">
+    <section class="pb-100">
+        <div class="container">
+
+            <div th:if="${section.testo != null and !section.testo.isEmpty()}" th:utext="${section.testo}" class="mb-40"></div>
+
+            <div class="row justify-content-center" th:if="${section.hasContenuti()}">
+                <div class="col-lg-9 mb-25" th:each="articolo, iterStat : ${section.contenuti}">
+                    <div class="pb-25" th:style="${!iterStat.last} ? 'border-bottom:1px solid rgba(0,0,0,.08);' : ''">
+                        <div class="it-blog-meta mb-5" th:if="${articolo.dataVisualizzata != null}">
+                            <span th:text="${articolo.dataVisualizzata}">Data</span>
+                        </div>
+                        <a th:href="@{'/' + ${articolo.url}}" class="border-line d-block fw-600 mb-10" style="font-size:19px;" th:text="${articolo.titolo}">Titolo</a>
+                        <p class="mb-0" th:if="${articolo.riassunto != null}" th:text="${articolo.riassunto}">Riassunto</p>
+                    </div>
+                </div>
+            </div>
+
+            <div th:replace="~{site01/fragments/section_frag/_pagination :: nav}"></div>
+
+            <div class="alert alert-light text-center" th:if="${!section.hasContenuti()}">
+                Nessuna news disponibile al momento.
+            </div>
+        </div>
+    </section>
+</th:block>
+</body>
+</html>

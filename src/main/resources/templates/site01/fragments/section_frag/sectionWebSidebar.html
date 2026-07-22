@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ========================================
+     FRAGMENT: Section Web Sidebar
+     sectionType.page3 = 'sectionWebSidebar'
+     Ricostruita sul markup reale del tema Educeet (sidebar-widget-list,
+     postbox-thumb-box, it-pagination). Le classi precedenti (feature-box,
+     card/box-shadow-small/hover-box, icon-feather-*, bg-very-light-gray,
+     pagination-style-01) non esistono nel CSS di Educeet.
+     ======================================== -->
+<th:block th:fragment="content">
+
+    <section class="pt-0 pb-100">
+        <div class="container">
+            <div class="row gx-35">
+
+                <!-- CONTENUTO PRINCIPALE -->
+                <div class="col-lg-8">
+
+                    <!-- Testo della sezione -->
+                    <div class="section-content" th:if="${section.testo != null and !section.testo.isEmpty()}">
+                        <div th:utext="${section.testo}" class="mb-40"></div>
+                    </div>
+
+                    <!-- Sottosezioni -->
+                    <div class="mb-40" th:if="${section.hasSubsections()}">
+                        <div class="row row-cols-1 row-cols-md-2 gx-35">
+                            <div class="col mb-30" th:each="sub : ${section.subsection}">
+                                <div class="sidebar-widget-post">
+                                    <div class="rc-post">
+                                        <div class="rc-post-content">
+                                            <h5 class="rc-post-title">
+                                                <a class="border-line" th:href="@{'/' + ${sub.url}}" th:text="${sub.titolo}">Sottosezione</a>
+                                            </h5>
+                                            <p th:if="${sub.riassunto != null and !sub.riassunto.isEmpty()}" th:text="${sub.riassunto}" class="mb-0">Descrizione</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenuti della sezione -->
+                    <div th:if="${section.hasContenuti()}">
+                        <h4 class="it-section-title mb-30">Contenuti</h4>
+
+                        <div class="postbox-thumb-box mb-70" th:each="articolo : ${section.contenuti}">
+                            <div class="postbox-main-thumb border-radius-20 mb-35" th:if="${articolo.logo != null and !articolo.logo.isEmpty()}">
+                                <a th:href="@{'/' + ${articolo.url}}">
+                                    <img class="w-100" th:src="${config.imagesRepositoryWeb + articolo.logo}" th:alt="${articolo.titolo}"/>
+                                </a>
+                            </div>
+                            <div class="postbox-content-box">
+                                <div class="it-blog-meta mb-20" th:if="${articolo.dataVisualizzata != null and !articolo.dataVisualizzata.isEmpty()}">
+                                    <span><i class="fa-solid fa-calendar-days"></i> <span th:text="${articolo.dataVisualizzata}">Data</span></span>
+                                </div>
+                                <h5 class="it-section-title">
+                                    <a class="border-line" th:href="@{'/' + ${articolo.url}}" th:text="${articolo.titolo}">Titolo</a>
+                                </h5>
+                                <div class="postbox-dsc" th:if="${articolo.riassunto != null and !articolo.riassunto.isEmpty()}">
+                                    <p class="mb-25" th:text="${articolo.riassunto}">Riassunto</p>
+                                </div>
+                                <a th:href="@{'/' + ${articolo.url}}" class="it-btn-yellow theme-bg">
+                                    <span>
+                                        <span class="text-1">Leggi di più</span>
+                                        <span class="text-2">Leggi di più</span>
+                                    </span>
+                                    <i><i class="fa-solid fa-arrow-right"></i></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div th:replace="~{site01/fragments/section_frag/_pagination :: nav}"></div>
+                    </div>
+
+                    <!-- Allegati -->
+                    <div class="sidebar-widget mb-60" th:if="${section.allegati != null and !section.allegati.isEmpty()}">
+                        <h5 class="sidebar-widget-title mb-25">Allegati</h5>
+                        <ul class="list-unstyled mb-0">
+                            <li th:each="allegato : ${section.allegati}" class="mb-15 pb-15" style="border-bottom:1px solid rgba(0,0,0,.08);">
+                                <a th:href="@{'/filesId/' + ${allegato.id} + '/' + ${allegato.l2} + '/' + ${allegato.l1} + '.' + ${allegato.type}}"
+                                   target="_blank">
+                                    <i class="fa-solid fa-file me-10px"></i>
+                                    <span th:text="${allegato.l1}">Nome file</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+
+                <!-- SIDEBAR -->
+                <div class="col-lg-4">
+                    <div th:replace="~{site01/fragments/section_frag/_sidebar :: widget}"></div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+</th:block>
+
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="it"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      data-pc-preset="preset-1"
+      data-pc-sidebar-caption="true"
+      data-pc-layout="vertical"
+      data-pc-direction="ltr"
+      data-pc-theme="light">
+
+<!-- HEAD -->
+<th:block th:replace="~{manager/fragments/head :: head}"></th:block>
+<th:block layout:fragment="extra-css"></th:block>
+
+
+<body>
+<!-- Preloader -->
+<div class="loader-bg">
+    <div class="loader-track">
+        <div class="loader-fill"></div>
+    </div>
+</div>
+
+<!-- Sidebar -->
+<th:block th:replace="~{manager/fragments/sidebar :: sidebar}"></th:block>
+
+<!-- Header -->
+<th:block th:replace="~{manager/fragments/header :: header}"></th:block>
+
+<!-- Main Content -->
+<div class="pc-container">
+    <div class="pc-content">
+        <div th:fragment="content">
+            <div layout:fragment="content">
+                <p>Contenuto pagina</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<th:block th:replace="~{manager/fragments/footer :: footer}"></th:block>
+
+<!-- Customizer -->
+<th:block th:replace="~{manager/fragments/customizer :: customizer}"></th:block>
+
+<!-- Scripts -->
+<th:block th:replace="~{manager/fragments/scripts :: scripts}"></th:block>
+<th:block layout:fragment="extra-js"></th:block>
+
+<!-- Toast Container -->
+<div id="toast-container"
+     class="toast-container position-fixed bottom-0 end-0 p-3"
+     style="z-index: 9999;">
+</div>
+<!-- Confirm Modal -->
+<div id="confirmModal" class="modal fade" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Conferma</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmModalMessage">Sei sicuro di voler procedere?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                <button type="button" class="btn btn-danger" id="confirmModalBtn">Conferma</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal FileManager — disponibile globalmente -->
+<div id="modalAccount" class="modal fade" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered" id="modalAccountDialog"
+         style="max-width:1200px;">
+        <div class="modal-content">
+            <div class="modal-header" id="modalAccountHeader" style="cursor:move;">
+                <h5 class="modal-title" id="modalAccountTitle">Caricamento...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalAccountBody" style="max-height:1200px; overflow-y:auto;">
+                <div class="text-center p-4">
+                    <div class="spinner-border text-info"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Session Timeout Warning -->
+<script>
+    (function() {
+    const WARNING_MS = 9 * 60 * 1000;
+    const EXPIRE_MS  = 10 * 60 * 1000;
+    let warningTimer, expireTimer;
+
+    function resetTimers() {
+        clearTimeout(warningTimer);
+        clearTimeout(expireTimer);
+
+        warningTimer = setTimeout(function() {
+            document.getElementById('sessionWarningModal').style.display = 'flex';
+            let remaining = 60;
+            const countdown = document.getElementById('sessionCountdown');
+            countdown.textContent = remaining;
+            const interval = setInterval(function() {
+                remaining--;
+                countdown.textContent = remaining;
+                if (remaining <= 0) clearInterval(interval);
+            }, 1000);
+        }, WARNING_MS);
+
+        expireTimer = setTimeout(function() {
+            window.location.href = '/logout';
+        }, EXPIRE_MS);
+    }
+
+    resetTimers();
+
+    window.keepSession = function() {
+        fetch('/admin/ping').then(function() {
+            document.getElementById('sessionWarningModal').style.display = 'none';
+            resetTimers();
+        });
+    };
+})();
+</script>
+
+<!-- Session Warning Modal -->
+<div id="sessionWarningModal"
+     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(0,0,0,0.5); z-index:99999;
+            align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:8px; padding:30px;
+                max-width:400px; width:90%; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+        <h5 style="margin-bottom:15px;">
+            <i class="ti ti-clock" style="color:#f59e0b; font-size:1.5rem;"></i>
+            Sessione in scadenza
+        </h5>
+        <p>La pagina sta per scadere tra <strong><span id="sessionCountdown">60</span></strong> secondi.</p>
+        <p>Vuoi mantenere la sessione attiva?</p>
+        <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
+            <button class="btn btn-primary" onclick="keepSession()">
+                Sì, mantieni sessione
+            </button>
+            <button class="btn btn-secondary" onclick="window.location.href='/admin/logout'">
+                No, esci
+            </button>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

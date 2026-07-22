@@ -1,0 +1,22 @@
+package com.jplatform_studiodomino.cms.front.dto;
+import com.jplatform_studiodomino.shared.entity.UtenteEsterno;
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
+public class FrontContentFilter {
+    private String anno;
+    private String mese;
+    private String stato;
+    private String privato;
+    private String my;
+    private String archivio;
+    private String ordinamento;
+    private String sqlContenuto;
+    private UtenteEsterno utente;
+    private String q;        // testo libero
+    private String dal;      // data inizio yyyy-MM-dd
+    private String al;       // data fine   yyyy-MM-dd
+    private int page;
+}

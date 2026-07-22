@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- content.section.sectionType.page4 = 'landing' (pagina landing a tutta larghezza per un contenuto specifico) -->
+<th:block th:fragment="content">
+
+    <!-- Hero -->
+    <section class="p-0 overflow-hidden"
+             style="background-color:#0d0d0d; background-size:cover; background-position:center;"
+             th:style="${post.logo != null and !post.logo.isEmpty()} ? ('background-color:#0d0d0d; background-size:cover; background-position:center; background-image: url(' + ${config.imagesRepositoryWeb + post.logo} + ')') : 'background-color:#0d0d0d;'">
+        <div class="container pt-100 pb-100">
+            <div class="row justify-content-center text-center">
+                <div class="col-lg-8 text-white">
+                    <h1 class="fw-600 mb-20" th:text="${post.titolo}">Titolo</h1>
+                    <p style="font-size:19px;" th:if="${post.riassunto != null and !post.riassunto.isEmpty()}" th:text="${post.riassunto}">Sottotitolo</p>
+                    <a th:href="@{/front/370/Contatti}" class="it-btn-yellow theme-bg mt-20">
+                        <span><span class="text-1">Richiedi informazioni</span><span class="text-2">Richiedi informazioni</span></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Corpo -->
+    <section id="page-content">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-9">
+                    <div th:if="${post.testo != null and !post.testo.isEmpty()}" th:utext="${post.testo}"></div>
+                </div>
+            </div>
+
+            <div class="row gx-15 mt-30" th:if="${post.gallery != null and !post.gallery.isEmpty()}">
+                <div class="col-lg-4 col-md-4 col-6 mb-15" th:each="img : ${post.gallery}">
+                    <a th:href="${config.imagesRepositoryWeb + img.fullpath}" data-lightbox-gallery="landing-gallery" class="d-block border-radius-20 overflow-hidden">
+                        <img class="w-100" th:src="${config.imagesRepositoryWeb + (img.paththumb != null and !img.paththumb.isEmpty() ? img.paththumb : img.fullpath)}" th:alt="${img.didascalia != null ? img.didascalia : ''}"/>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</th:block>
+</body>
+</html>

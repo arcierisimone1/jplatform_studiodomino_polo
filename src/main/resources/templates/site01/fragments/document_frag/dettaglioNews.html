@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- content.section.sectionType.page4 = 'dettaglioNews' -->
+<th:block th:fragment="content">
+    <section id="page-content">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-9">
+
+                    <div class="mb-30" th:if="${post.logo != null and !post.logo.isEmpty()}">
+                        <img th:src="${config.imagesRepositoryWeb + post.logo}" th:alt="${post.titolo}" class="w-100 border-radius-20"/>
+                    </div>
+
+                    <div class="it-blog-meta mb-15" th:if="${post.dataVisualizzata != null and !post.dataVisualizzata.isEmpty()}">
+                        <span><i class="fa-solid fa-calendar-days"></i> <span th:text="${post.dataVisualizzata}">Data</span></span>
+                    </div>
+
+                    <div th:if="${post.riassunto != null and !post.riassunto.isEmpty()}" class="fw-600 mb-20" style="font-size:18px;" th:text="${post.riassunto}">Riassunto</div>
+
+                    <div th:if="${post.testo != null and !post.testo.isEmpty()}" th:utext="${post.testo}"></div>
+
+                    <div class="mt-30 pt-25 d-flex justify-content-between flex-wrap gap-3" style="border-top:1px solid rgba(0,0,0,.08);">
+                        <a th:if="${parentSection != null}" th:href="@{'/front/' + ${parentSection.id}}" class="border-line">
+                            <i class="fa-solid fa-arrow-left" style="margin-right:8px;"></i>Torna alle notizie
+                        </a>
+                        <div class="d-flex" style="gap:12px;">
+                            <a th:href="@{'https://www.facebook.com/sharer/sharer.php?u=' + ${currentUrl}}" target="_blank" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                            <a th:href="@{'https://wa.me/?text=' + ${currentUrl}}" target="_blank" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="content">
+
+  <form th:action="@{/admin/sezioni/save}"
+        method="post"
+        id="sezione"
+        name="sezione"
+        class="form-bordered">
+
+    <header class="page-header mb-2">
+      <div class="title-container mb-3">
+        <h2 style="border-left: 5px solid #0088cc; padding-left: 15px;"
+            th:text="${section.titolo != null and !#strings.isEmpty(section.titolo) ? section.titolo : 'Nuova sezione'}">
+          Titolo
+        </h2>
+      </div>
+
+      <div class="right-wrapper text-right" style="margin-left: auto; margin-right: 10%;">
+
+        <a th:href="@{/admin/sezioni/new}" class="mb-1 mt-1 mr-1 btn btn-sm btn-success">
+          <i class="fas fa-plus-circle"></i> <span class="btn-text">Nuova</span>
+        </a>
+
+        <a th:if="${section.id != null}"
+           th:href="@{/admin/sezioni/{id}/duplicate(id=${section.id})}"
+           th:data-titolo="${section.titolo}"
+           class="mb-1 mt-1 mr-1 btn btn-sm btn-info"
+           onclick="confirmAction('Duplicare &quot;' + this.dataset.titolo + '&quot;?', function(){ window.location=this.href; }.bind(this)); return false;">
+          <i class="fas fa-clone"></i> <span class="btn-text">Duplica</span>
+        </a>
+
+        <button type="button" class="mb-1 mt-1 mr-1 btn btn-sm btn-primary"
+                onclick="InviaForm('sezione');">
+          <i class="fas fa-save"></i> <span class="btn-text">Salva</span>
+        </button>
+
+        <a th:href="@{/admin/sezioni}" onclick="CloseHsReloadBase();"
+           class="mb-1 mt-1 mr-1 btn btn-sm btn-danger">
+          <i class="fas fa-times-circle"></i> <span class="btn-text">Esci</span>
+        </a>
+      </div>
+    </header>
+
+    <div class="row" style="margin-top: -25px">
+      <div class="col-lg-12">
+        <div class="card shadow-sm border-0" style="border-radius: 15px; background: #fff; padding: 20px;">
+
+          <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item storeTab" role="presentation">
+              <a class="nav-link active" href="#tab_01" data-bs-toggle="tab" role="tab">Definizione</a>
+            </li>
+            <li class="nav-item storeTab" role="presentation">
+              <a class="nav-link" href="#tab_02" data-bs-toggle="tab" role="tab">Abstract</a>
+            </li>
+            <li class="nav-item storeTab" role="presentation">
+              <a class="nav-link" href="#tab_03" data-bs-toggle="tab" role="tab">Contenuto</a>
+            </li>
+            <li class="nav-item storeTab" role="presentation">
+              <a class="nav-link" href="#tab_04" data-bs-toggle="tab" role="tab">Immagini</a>
+            </li>
+            <li class="nav-item storeTab" role="presentation">
+              <a class="nav-link" href="#tab_05" data-bs-toggle="tab" role="tab">Allegati</a>
+            </li>
+            <li class="nav-item storeTab" role="presentation">
+              <a class="nav-link" href="#tab_06" data-bs-toggle="tab" role="tab">Autorizzazioni</a>
+            </li>
+            <li class="nav-item storeTab" role="presentation">
+              <a class="nav-link" href="#tab_07" data-bs-toggle="tab" role="tab">Altro</a>
+            </li>
+            <li class="nav-item storeTab" role="presentation">
+              <a class="nav-link" href="#tab_08" data-bs-toggle="tab" role="tab">Relazioni</a>
+            </li>
+          </ul>
+
+          <div class="tab-content">
+
+            <div id="tab_01" class="tab-pane active" role="tabpanel">
+
+              <div class="row form-group">
+                <div class="col-lg-12">
+                  <label for="titolo" class="col-form-label">Titolo</label>
+                  <textarea name="titolo" id="titolo"
+                            class="form-control obbligatorio"
+                            rows="2" required th:text="${section.titolo}"></textarea>
+                </div>
+              </div>
+
+              <div class="row form-group">
+                <div class="col-lg-3">
+                  <label for="stato" class="col-form-label">Stato workflow</label>
+                  <select name="stato" id="stato" class="form-control obbligatorio" required>
+                    <option value="">----- Seleziona lo stato -----</option>
+                    <option value="0" th:selected="${section.stato == '0'}">Bozza</option>
+                    <option value="1" th:selected="${section.stato == '1'}">Pubblicato</option>
+                    <option value="2" th:selected="${section.stato == '2'}">Archiviato</option>
+                    <option value="3" th:selected="${section.stato == '3'}">In revisione</option>
+                    <option value="4" th:selected="${section.stato == '4'}">Altro</option>
+                  </select>
+                </div>
+                <div class="col-lg-3">
+                  <label for="idType" class="col-form-label">Categoria documento</label>
+                  <select name="idType" id="idType" class="form-control obbligatorio" required>
+                    <option value="">----- Seleziona tipologia sezione -----</option>
+                    <option th:each="type : ${sectionTypes}"
+                            th:value="${type.id}"
+                            th:text="${type.description}"
+                            th:selected="${section != null and type.id == section.idType}">
+                    </option>
+                  </select>
+                </div>
+                <div class="col-lg-3">
+                  <label for="dataVisualizzata" class="col-form-label">Data visualizzata</label>
+                  <input type="text" name="dataVisualizzata" id="dataVisualizzata"
+                         th:value="${section.dataVisualizzata}"
+                         class="form-control dataVisualizzata obbligatorio" required>
+                </div>
+                <div class="col-lg-3">
+                  <label for="data" class="col-form-label">Data riferimento</label>
+                  <input type="text" name="data" id="data"
+                         th:value="${section.data}"
+                         class="form-control dataBase obbligatorio" required>
+                </div>
+              </div>
+
+              <div class="row form-group">
+                <div class="col-lg-3">
+                  <label for="menu1" class="col-form-label">Tipologia slider home</label>
+                  <select name="menu1" id="menu1" class="form-control obbligatorio" required>
+                    <option value="">----- Seleziona menu di visualizzazione -----</option>
+                    <option value="0" th:selected="${section.menu1 == '0'}">Non visualizzare</option>
+                    <option value="1" th:selected="${section.menu1 == '1'}">Slider full page</option>
+                    <option value="2" th:selected="${section.menu1 == '2'}">Slider multi page</option>
+                  </select>
+                </div>
+                <div class="col-lg-3">
+                  <label for="menu5" class="col-form-label">Navigazione veloce</label>
+                  <select name="menu5" id="menu5" class="form-control">
+                    <option value="0" th:selected="${section.menu5 == '0'}">Non inserire</option>
+                    <option value="1" th:selected="${section.menu5 == '1'}">Inserire</option>
+                  </select>
+                </div>
+                <div class="col-lg-6">
+                  <label for="tag" class="col-form-label">TAG</label>
+                  <input type="text" name="tag" id="tag"
+                         th:value="${section.tag}"
+                         class="form-control" onblur="ControlloCampoTag(this);">
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="s3" class="col-form-label">Periodo visualizzazione</label>
+                    <select name="s3" id="s3" onchange="AttivaDataPubblicazione()" class="form-control obbligatorio" required>
+                      <option value="0" th:selected="${section.s3 == '0'}">Illimitato - Sempre visibile</option>
+                      <option value="1" th:selected="${section.s3 == '1'}">Pubblicazione programmata</option>
+                    </select>
+                  </div>
+                  <div id="datePubblicazione" class="row form-group mt-2" style="display:none; background: #f9f9f9; padding: 10px; border-radius: 8px; margin-left:0; margin-right:0;">
+                    <div class="col-lg-6">
+                      <label for="s1" class="col-form-label">Data inizio pubblicazione</label>
+                      <input type="text" name="s1" id="s1" th:value="${section.s1}" class="form-control dataBase">
+                    </div>
+                    <div class="col-lg-6">
+                      <label for="s2" class="col-form-label">Data fine pubblicazione</label>
+                      <input type="text" name="s2" id="s2" th:value="${section.s2}" class="form-control dataBase">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="menu2" class="col-form-label">Tipo link</label>
+                    <select name="menu2" id="menu2" onchange="AttivaLinkEsterno()" class="form-control obbligatorio" required>
+                      <option value="">----- Seleziona tipo link menu -----</option>
+                      <option value="0" th:selected="${section.menu2 == '0'}">Linkabile</option>
+                      <option value="1" th:selected="${section.menu2 == '1'}">Non linkabile</option>
+                      <option value="2" th:selected="${section.menu2 == '2'}">Punta a link esterno</option>
+                    </select>
+                  </div>
+                  <div id="linkEsterno" class="row form-group mt-2" style="display:none; background: #f9f9f9; padding: 10px; border-radius: 8px; margin-left:0; margin-right:0;">
+                    <div class="col-lg-6">
+                      <label for="menu3" class="col-form-label">URL link esterno</label>
+                      <input type="text" name="menu3" id="menu3" th:value="${section.menu3}" class="form-control">
+                    </div>
+                    <div class="col-lg-6">
+                      <label for="menu4" class="col-form-label">Titolo link esterno</label>
+                      <input type="text" name="menu4" id="menu4" th:value="${section.menu4}" class="form-control">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <div id="tab_02" class="tab-pane" role="tabpanel">
+              <div class="row form-group">
+                <div class="col-lg-12">
+                  <label class="col-form-label" for="riassunto">Abstract
+                    <a href="javascript:void(0)" onclick="toggleEditor('riassunto');">Editor</a>
+                  </label>
+                  <textarea name="riassunto" id="riassunto"
+                            class="tinymce5 form-control"
+                            th:text="${section.riassunto}"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div id="tab_03" class="tab-pane" role="tabpanel">
+              <div class="row form-group">
+                <div class="col-lg-12">
+                  <label class="col-form-label" for="testo">Contenuto pagine
+                    <a href="javascript:void(0)" onclick="toggleEditor('testo');">Editor</a>
+                  </label>
+                  <textarea name="testo" id="testo"
+                            class="tinymce5 form-control"
+                            th:text="${section.testo}"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div id="tab_04" class="tab-pane" role="tabpanel">
+              <div class="row form-group mt-3">
+                <div class="col-lg-6">
+                  <h4>Immagini inserite nella pagina</h4>
+                  <small class="form-text text-muted">Le immagini possono essere spostate e riordinate.</small>
+                </div>
+                <div class="col-lg-6 text-right">
+                  <button type="button" class="mb-1 mt-1 mr-1 btn btn-sm btn-primary"
+                          onclick="FileManager.apriForm('/admin/filemanager/popup/1/immagini','Media Library Immagini')">
+                    <i class="fas fa-images"></i> Media Library
+                  </button>
+                  <button type="button" class="mb-1 mt-1 mr-1 btn btn-sm btn-primary"
+                          onclick="FileManager.apriForm('/admin/filemanager/images/new/1','Carica immagine')">
+                    <i class="fas fa-upload"></i> Carica immagine
+                  </button>
+
+                  <button type="button"
+                          class="mb-1 mt-1 mr-1 btn btn-sm btn-primary"
+                          onclick="RimuoviTutteImmagine();">
+                    <i class="fas fa-trash-alt"></i> Cancella tutte
+                  </button>
+                </div>
+              </div>
+              <div class="row form-group">
+                <div class="col-lg-12">
+                  <input type="hidden" name="galleryString" id="galleryString"
+                         class="galleryString" th:value="${section.galleryString}">
+                  <div class="popup-gallery" id="divgallery">
+                    <div th:each="immagine : ${section.gallery}"
+                         th:attr="id=${immagine.id}"
+                         class="float-left mb-1 mr-1">
+                      <div class="img-fluid">
+                        <img th:src="${config.imagesRepositoryWeb + immagine.fullpath}" width="200">
+                      </div>
+                      <a href="javascript:void(0);"
+                         th:data-id="${immagine.id}"
+                         onclick="cancellaImmagineInserita(this.getAttribute('data-id'))">Cancella</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="tab_05" class="tab-pane" role="tabpanel">
+              <div class="row form-group mt-3">
+                <div class="col-lg-6">
+                  <h4>Allegati inseriti nella pagina
+                    <i class="fas fa-info-circle" data-bs-toggle="tooltip"
+                       title="E' possibile inserire allegati dalla Media Library o con caricamento diretto."></i>
+                  </h4>
+                  <small class="form-text text-muted">Gli allegati possono essere spostati e riordinati.</small>
+                </div>
+                <div class="col-lg-6 text-right">
+                  <button type="button" class="mb-1 mt-1 mr-1 btn btn-sm btn-primary"
+                          onclick="FileManager.apriForm('/admin/filemanager/popup/1/allegati','Media Library Documenti')">
+                    <i class="fas fa-images"></i> Media Library
+                  </button>
+                  <button type="button" class="mb-1 mt-1 mr-1 btn btn-sm btn-primary"
+                          th:onclick="|FileManager.apriForm('/admin/filemanager/files/new/1/' + ${section.id},'Carica allegato')|">
+                    <i class="fas fa-file-upload"></i> Carica allegato
+                  </button>
+                </div>
+              </div>
+              <div class="row form-group">
+                <div class="col-lg-12">
+                  <input type="hidden" name="ordineAllegatiBase" id="ordineAllegatiBase">
+                  <input type="hidden" name="ordineAllegati" id="ordineAllegati">
+                  <input type="hidden" name="allegatoString" id="allegatoString" value="">
+                  <input type="hidden" name="scollegaString" id="scollegaString" value="">
+
+                  <div id="boxallegati">
+                    <ul id="sortableAllegato" class="list-unstyled">
+                      <li th:each="allegato : ${section.allegati}"
+                          th:if="${allegato.id != -1}"
+                          th:attr="id=${allegato.idDocAllegati}">
+                        <div th:attr="id=${'boxallegato_' + allegato.idDocAllegati}">
+
+                          <a href="javascript:void(0);"
+                             th:data-id="${allegato.idDocAllegati}"
+                             th:data-allegato-id="${allegato.id}"
+                             onclick="scollegaErimuovi(this.getAttribute('data-id'), this.getAttribute('data-allegato-id'))">
+                            Cancella
+                          </a>
+
+                          <a th:href="@{'/admin/filemanager/files/' + ${allegato.id} + '/download'}"
+                             target="_blank" title="Scarica">
+                            <i class="fas fa-download" style="margin-right:6px;"></i>
+                          </a>
+
+                          <i class="fas fa-file text-secondary" style="margin-right:6px;"></i>
+
+                          <span th:text="${allegato.l1}">Nome</span>
+                          - (<span th:text="${allegato.dataInserimento}">data</span>)
+                          - (Versione <span th:text="${allegato.version}">1</span>)
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="tab_06" class="tab-pane" role="tabpanel">
+              <div class="row form-group">
+                <div class="col-lg-6">
+                  <label for="privato" class="col-form-label">Sezione privata</label>
+                  <select name="privato" id="privato"
+                          onchange="AttivaAutorizzazioniUtente()" class="form-control obbligatorio">
+                    <option value="">----- Seleziona tipo accesso -----</option>
+                    <option value="0" th:selected="${section.privato == '0'}">Sezione pubblica e visibile a tutti</option>
+                    <option value="1" th:selected="${section.privato == '1'}">Sezione privata e visibile al gruppo autorizzato</option>
+                    <option value="2" th:selected="${section.privato == '2'}">Autorizzazione personalizzata</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row mb-4 animate__animated animate__fadeIn" id="GruppiAbilitati" th:style="${section.privato == '1' ? 'display:flex' : 'display:none'}">
+                <div class="col-lg-4">
+                  <label for="idgruppi" class="form-label fw-bold text-primary">Gruppi associati</label>
+                  <select name="idgruppi" id="idgruppi" multiple size="5" class="form-select shadow-sm obbligatorio">
+                    <option value="0">Standard</option>
+                    <option th:each="gruppo : ${config.gruppi}"
+                            th:value="${gruppo.id}" th:text="${gruppo.nome}"
+                            th:selected="${section.idgruppi != null and #lists.contains(section.idgruppi, gruppo.id)}"></option>
+                  </select>
+                  <small class="text-muted">Selezione multipla con CTRL (Windows) o CMD (Mac)</small>
+                </div>
+                <div class="col-lg-8">
+                  <div class="alert alert-light border-start border-primary border-4 h-100 d-flex align-items-center">
+                    <p class="mb-0 small text-muted">
+                      Selezionare i gruppi che avranno il permesso di accedere alla sezione ed ai documenti associati.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="row mb-4 animate__animated animate__fadeIn" id="PermessiPersonalizzati" th:style="${section.privato == '2' ? 'display:flex' : 'display:none'}">
+                  <div class="col-lg-12">
+                    <div class="card bg-light">
+                      <div class="card-body">
+                        <label for="cognomePermessoPrivato" class="form-label fw-bold">Cerca utente da inserire nelle autorizzazioni</label>
+                        <div class="input-group mb-3">
+                          <input name="cognomePermessoPrivato" id="cognomePermessoPrivato" type="text" class="form-control js-autocomplete" data-url="/admin/crm/utenti/search" placeholder="Inizia a digitare il cognome...">
+                          <input type="hidden" name="utentiAssociatiString" id="utentiAssociatiString"
+                                 th:value="${section.utentiAssociatiString}">
+                        </div>
+                        <div id="utenti" class="border rounded bg-white p-2" style="overflow:auto;height:100px;">
+                          <div th:each="u : ${section.utentiAssociati}" th:id="'user-badge-' + ${u.id}" class="badge bg-secondary m-1 p-2 d-inline-flex align-items-center">
+                            <span th:text="${u.nome + ' ' + u.cognome}">Nome Cognome</span>
+                            <i class="fas fa-times ms-2 cursor-pointer" th:onclick="'RimuoviUtenteAssociato(' + ${u.id} + ')'" title="Rimuovi"></i>
+                          </div>
+                        </div>
+                        <div class="form-text mt-2">Ricercare gli utenti che saranno autorizzati singolarmente ad accedere alla sezione.</div>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+              <hr class="my-4">
+
+              <div class="row g-3">
+                <div class="col-lg-3">
+                  <label for="info2" class="col-form-label">Form contatti</label>
+                  <select name="info2" id="info2" class="form-control">
+                    <option value="0" th:selected="${section.info2 == '0'}">Non visualizzare</option>
+                    <option value="1" th:selected="${section.info2 == '1'}">Visualizza</option>
+                  </select>
+                </div>
+                <div class="col-lg-3">
+                  <label for="info1" class="col-form-label">Form commenti</label>
+                  <select name="info1" id="info1" class="form-control">
+                    <option value="0" th:selected="${section.info1 == '0'}">Non visualizzare</option>
+                    <option value="1" th:selected="${section.info1 == '1'}">Visualizza</option>
+                  </select>
+                </div>
+                <div class="col-lg-3">
+                  <label for="info3" class="col-form-label">Visualizza commenti</label>
+                  <select name="info3" id="info3" class="form-control">
+                    <option value="0" th:selected="${section.info3 == '0'}">Non visualizzare</option>
+                    <option value="1" th:selected="${section.info3 == '1'}">Visualizza</option>
+                  </select>
+                </div>
+                <div class="col-lg-3">
+                  <label class="col-form-label">Analizza commenti</label>
+                  <a href="javascript:void(0)">Vedi tutti</a>
+                </div>
+              </div>
+              <div class="row form-group">
+                <div class="col-lg-3">
+                  <label for="click" class="col-form-label">Numero di click</label>
+                  <input type="text" name="click" id="click"
+                         class="form-control" th:value="${section.click}">
+                </div>
+              </div>
+            </div>
+
+            <div id="tab_07" class="tab-pane" role="tabpanel">
+              <div class="row form-group">
+                <div class="col-lg-3">
+                  <label for="varchar1" class="col-form-label">Varchar1</label>
+                  <input type="text" name="varchar1" id="varchar1" class="form-control" th:value="${section.varchar1}">
+                </div>
+                <div class="col-lg-3">
+                  <label for="varchar2" class="col-form-label">Varchar2</label>
+                  <input type="text" name="varchar2" id="varchar2" class="form-control" th:value="${section.varchar2}">
+                </div>
+                <div class="col-lg-3">
+                  <label for="varchar3" class="col-form-label">Varchar3</label>
+                  <input type="text" name="varchar3" id="varchar3" class="form-control" th:value="${section.varchar3}">
+                </div>
+                <div class="col-lg-3">
+                  <label for="varchar4" class="col-form-label">Varchar4</label>
+                  <input type="text" name="varchar4" id="varchar4" class="form-control" th:value="${section.varchar4}">
+                </div>
+                <div class="col-lg-3">
+                  <label for="varchar5" class="col-form-label">Varchar5</label>
+                  <input type="text" name="varchar5" id="varchar5" class="form-control" th:value="${section.varchar5}">
+                </div>
+                <div class="col-lg-3">
+                  <label for="varchar6" class="col-form-label">Varchar6</label>
+                  <input type="text" name="varchar6" id="varchar6" class="form-control" th:value="${section.varchar6}">
+                </div>
+                <div class="col-lg-3">
+                  <label for="varchar7" class="col-form-label">Varchar7</label>
+                  <input type="text" name="varchar7" id="varchar7" class="form-control" th:value="${section.varchar7}">
+                </div>
+                <div class="col-lg-3">
+                  <label for="varchar8" class="col-form-label">Varchar8</label>
+                  <input type="text" name="varchar8" id="varchar8" class="form-control" th:value="${section.varchar8}">
+                </div>
+                <div class="col-lg-3">
+                  <label for="varchar9" class="col-form-label">Varchar9</label>
+                  <input type="text" name="varchar9" id="varchar9" class="form-control" th:value="${section.varchar9}">
+                </div>
+                <div class="col-lg-3">
+                  <label for="varchar10" class="col-form-label">Varchar10</label>
+                  <input type="text" name="varchar10" id="varchar10" class="form-control" th:value="${section.varchar10}">
+                </div>
+              </div>
+              <div class="row form-group">
+                <div class="col-lg-6">
+                  <label class="col-form-label" for="text1">Footer - TEXT1
+                    <a href="javascript:void(0)" onclick="toggleEditor('text1');">Editor</a>
+                  </label>
+                  <textarea name="text1" id="text1" class="form-control" th:text="${section.text1}"></textarea>
+                </div>
+                <div class="col-lg-6">
+                  <label class="col-form-label" for="text2">COOKIE BANNER - TEXT2
+                    <a href="javascript:void(0)" onclick="toggleEditor('text2');">Editor</a>
+                  </label>
+                  <textarea name="text2" id="text2" class="form-control" th:text="${section.text2}"></textarea>
+                </div>
+                <div class="col-lg-6">
+                  <label class="col-form-label" for="text3">HEADER BANNER - TEXT3
+                    <a href="javascript:void(0)" onclick="toggleEditor('text3');">Editor</a>
+                  </label>
+                  <textarea name="text3" id="text3" class="form-control" th:text="${section.text3}"></textarea>
+                </div>
+                <div class="col-lg-6">
+                  <label class="col-form-label" for="text4">TAGLIO PAGINA DESCRITTIVO - TEXT4
+                    <a href="javascript:void(0)" onclick="toggleEditor('text4');">Editor</a>
+                  </label>
+                  <textarea name="text4" id="text4" class="form-control" th:text="${section.text4}"></textarea>
+                </div>
+                <div class="col-lg-6">
+                  <label class="col-form-label" for="text5">TAGLIO PAGINA DESCRITTIVO - TEXT5
+                    <a href="javascript:void(0)" onclick="toggleEditor('text5');">Editor</a>
+                  </label>
+                  <textarea name="text5" id="text5" class="form-control" th:text="${section.text5}"></textarea>
+                </div>
+                <div class="col-lg-6">
+                  <label class="col-form-label" for="text6">DATI MODULO CONTATTI HOME - TEXT6
+                    <a href="javascript:void(0)" onclick="toggleEditor('text6');">Editor</a>
+                  </label>
+                  <textarea name="text6" id="text6" class="form-control" th:text="${section.text6}"></textarea>
+                </div>
+                <div class="col-lg-6">
+                  <label class="col-form-label" for="text7">Text7
+                    <a href="javascript:void(0)" onclick="toggleEditor('text7');">Editor</a>
+                  </label>
+                  <textarea name="text7" id="text7" class="form-control" th:text="${section.text7}"></textarea>
+                </div>
+                <div class="col-lg-6">
+                  <label class="col-form-label" for="text8">Text8
+                    <a href="javascript:void(0)" onclick="toggleEditor('text8');">Editor</a>
+                  </label>
+                  <textarea name="text8" id="text8" class="form-control" th:text="${section.text8}"></textarea>
+                </div>
+                <div class="col-lg-6">
+                  <label class="col-form-label" for="text9">Text9
+                    <a href="javascript:void(0)" onclick="toggleEditor('text9');">Editor</a>
+                  </label>
+                  <textarea name="text9" id="text9" class="form-control" th:text="${section.text9}"></textarea>
+                </div>
+                <div class="col-lg-6">
+                  <label class="col-form-label" for="text10">Text10
+                    <a href="javascript:void(0)" onclick="toggleEditor('text10');">Editor</a>
+                  </label>
+                  <textarea name="text10" id="text10" class="form-control" th:text="${section.text10}"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div id="tab_08" class="tab-pane" role="tabpanel">
+              <fieldset class="border p-3 mb-4">
+                <legend class="float-none w-auto px-2">Relazioni dirette</legend>
+                <div class="row">
+                  <div class="col-lg-6">
+                    <label for="l15" class="col-form-label">ID sezioni associate 1</label>
+                    <input type="text" name="l15" id="l15" class="form-control"
+                           th:value="${section.l15}" onblur="ControlloCampoTag(this);">
+                    <small class="form-text text-muted">ID sezioni da associare separate da virgola</small>
+                  </div>
+                  <div class="col-lg-6">
+                    <label for="l11" class="col-form-label">ID sezioni associate 2</label>
+                    <input type="text" name="l11" id="l11" class="form-control"
+                           th:value="${section.l11}" onblur="ControlloCampoTag(this);">
+                    <small class="form-text text-muted">ID sezioni da associare separate da virgola</small>
+                  </div>
+                </div>
+              </fieldset>
+              <fieldset class="border p-3 mb-4">
+                <legend class="float-none w-auto px-2">Gestione ExtraTAG</legend>
+                <div class="row mb-3">
+                  <div class="col-lg-3">
+                    <label for="regolaExtraTag1" class="col-form-label">Attivazione</label>
+                    <select name="regolaExtraTag1" id="regolaExtraTag1"
+                            class="form-select" onchange="AttivaExtraTag()">
+                      <option value="0" th:selected="${section.regolaExtraTag1 == '0'}">Disattivato</option>
+                      <option value="1" th:selected="${section.regolaExtraTag1 == '1'}">Attivato</option>
+                    </select>
+                    <small class="form-text text-muted">Attiva o disattiva dispositivo ExtraTAG</small>
+                  </div>
+                </div>
+                <div class="row g-3" id="ZonaExtraTagOrdine">
+                  <div class="col-lg-3">
+                    <label for="maxExtraTag" class="col-form-label">Numero elementi</label>
+                    <input type="text" name="maxExtraTag" id="maxExtraTag"
+                           class="form-control" th:value="${section.maxExtraTag}">
+                  </div>
+                  <div class="col-lg-3">
+                    <label for="ordineExtraTag" class="col-form-label">Ordine visualizzazione</label>
+                    <select name="ordineExtraTag" id="ordineExtraTag" class="form-select">
+                      <option value="rand()"       th:selected="${section.ordineExtraTag == 'rand()'}">Casuale</option>
+                      <option value="datasql-asc"  th:selected="${section.ordineExtraTag == 'datasql-asc'}">Crescente data</option>
+                      <option value="datasql-desc" th:selected="${section.ordineExtraTag == 'datasql-desc'}">Decrescente data</option>
+                      <option value="titolo-asc"   th:selected="${section.ordineExtraTag == 'titolo-asc'}">Crescente titolo</option>
+                      <option value="titolo-desc"  th:selected="${section.ordineExtraTag == 'titolo-desc'}">Decrescente titolo</option>
+                      <option value="position-asc" th:selected="${section.ordineExtraTag == 'position-asc'}">Crescente posizione</option>
+                    </select>
+                  </div>
+                  <div class="col-lg-6 d-flex align-items-center" id="SpazioEreditaExtraTag">
+                    <button type="button" id="EreditaExtraTag" class="btn btn-primary btn-lg w-100 mt-3">
+                      Applica questi ExtraTag a tutti i contenuti della categoria
+                    </button>
+                  </div>
+                </div>
+              </fieldset>
+              <fieldset id="ZonaExtraTag" class="border p-3">
+                <legend class="w-auto px-2">Campi aggiuntivi</legend>
+                <div class="row">
+                  <th:block th:each="i : ${#numbers.sequence(1, 10)}">
+                    <div class="col-lg-6 mb-3">
+                      <label th:for="${'extraTagRef' + i}" class="col-form-label"
+                             th:text="${'Sezione associata ' + i}"></label>
+                      <select th:name="${'extraTagRef' + i}" th:id="${'extraTagRef' + i}" class="form-control">
+                        <option value="0">Nessuna relazione</option>
+                        <option th:each="sez : ${elencoSezioniCompleto}"
+                                th:value="${sez.id}" th:text="${sez.titolo}"
+                                th:selected="${sez.id != null and sez.id.toString() == section.getExtraTagRef(i)}"></option>
+                      </select>
+                    </div>
+                    <div class="col-lg-6 mb-3">
+                      <label th:for="${'extraTag' + i}" class="col-form-label"
+                             th:text="${'TAG ' + i}"></label>
+                      <textarea th:name="${'extraTag' + i}" th:id="${'extraTag' + i}"
+                                class="form-control"
+                                th:text="${section.getExtraTag(i)}"
+                                onblur="ControlloCampoTag(this);"></textarea>
+                    </div>
+                  </th:block>
+                </div>
+              </fieldset>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <input type="hidden" name="creato" th:value="${section.creato}">
+    <input type="hidden" name="creatoDa" th:value="${section.creatoDa}">
+    <input type="hidden" name="modificatoDa" th:value="${section.modificatoDa}">
+    <input type="hidden" name="modificato" th:value="${section.modificato}">
+
+    <input type="hidden" name="anno"        th:value="${section.anno}">
+    <input type="hidden" name="mese"        th:value="${section.mese}">
+    <input type="hidden" name="id"          id="id"         th:value="${section.id}">
+    <input type="hidden" name="log1"        th:value="${section.log1}">
+    <input type="hidden" name="log2"        th:value="${section.log2}">
+    <input type="hidden" name="log3"        th:value="${section.log3}">
+    <input type="hidden" name="idparent"    id="idparent"   th:value="${section.idParent}">
+    <input type="hidden" name="temp1"       th:value="${section.statoText}">
+    <input type="hidden" name="id_root"     th:value="${section.idRoot}">
+    <input type="hidden" name="id_site"     th:value="${section.idSite}">
+    <input type="hidden" name="numeratore2" th:value="${section.numeratore2}">
+    <input type="hidden" name="numeratore3" th:value="${section.numeratore3}">
+    <input type="hidden" name="numeratore4" th:value="${section.numeratore4}">
+    <input type="hidden" name="numeratore5" th:value="${section.numeratore5}">
+
+  </form>
+
+  <div class="mt-2">
+    <a class="text-muted"
+       data-bs-toggle="collapse"
+       href="#infoTecniche"
+       role="button"
+       aria-expanded="false"
+       style="text-decoration: none; font-size: 0.75rem; cursor: pointer;">
+      Mostra dettagli tecnici
+    </a>
+
+    <div class="collapse" id="infoTecniche">
+      <div class="mt-2 p-2" style="font-size: 0.8rem; background-color: #fcfcfc;">
+        <div class="text-muted">
+          <span class="mr-2"><strong>ID:</strong> [[${section.id}]]</span>
+          <span class="mr-2">| <strong>Num:</strong> [[${section.numeratore1}]]</span>
+          <span class="mr-2">| <strong>URL:</strong> [[${section.url}]]</span>
+          <span class="mr-2">| <strong>Creato:</strong> [[${section.creatoDa}]] ([[${section.creato}]])</span>
+          <span>| <strong>Modifica:</strong> [[${section.modificatoDa}]] ([[${section.modificato}]])</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function waitForJQ() {
+        if (typeof $ === 'undefined') { setTimeout(waitForJQ, 50); return; }
+
+        window.InviaForm = function() {
+            var $form = $("#sezione");
+            if ($form[0].checkValidity() === false) {
+                if (typeof PNotify !== 'undefined') { new PNotify({ title: 'Attenzione!', text: 'Alcuni campi obbligatori richiedono un tuo intervento!', type: 'error', styling: 'bootstrap3' }); }
+                $form.addClass('was-validated'); return false;
+            }
+            $form.addClass('was-validated'); document.sezione.submit();
+        };
+        window.AttivaDataPubblicazione = function() { if ($('#s3').val() === '1') { $('#datePubblicazione').slideDown(); } else { $('#datePubblicazione').slideUp(); } };
+        window.AttivaLinkEsterno = function() { if ($('#menu2').val() === '2') { $('#linkEsterno').slideDown(); } else { $('#linkEsterno').slideUp(); } };
+        window.AttivaAutorizzazioniUtente = function() {
+            var valore = $('#privato').val();
+            if (valore === '1') { $('#GruppiAbilitati').slideDown(); $('#PermessiPersonalizzati').hide(); }
+            else if (valore === '2') { $('#GruppiAbilitati').hide(); $('#PermessiPersonalizzati').slideDown(); }
+            else { $('#GruppiAbilitati').hide(); $('#PermessiPersonalizzati').hide(); }
+        };
+        window.AttivaExtraTag = function() {
+            if ($('#regolaExtraTag1').val() === '1') { $('#ZonaExtraTag').slideDown(); $('#ZonaExtraTagOrdine').slideDown(); }
+            else { $('#ZonaExtraTag').slideUp(); $('#ZonaExtraTagOrdine').slideUp(); }
+        };
+        window.RimuoviUtenteAssociato = function(id) {
+            var stringa = $('#utentiAssociatiString').val();
+            $('#utentiAssociatiString').val(stringa.replace('(' + id + ');', ''));
+            $('#' + id).remove();
+        };
+
+        AttivaDataPubblicazione(); AttivaLinkEsterno(); AttivaAutorizzazioniUtente(); AttivaExtraTag();
+        $('#s3').on('change', AttivaDataPubblicazione); $('#menu2').on('change', AttivaLinkEsterno);
+        $('#privato').on('change', AttivaAutorizzazioniUtente); $('#regolaExtraTag1').on('change', AttivaExtraTag);
+        $('#EreditaExtraTag').on('click', function(e) { e.preventDefault(); if (typeof ApplicaExtraTagContenuti === "function") ApplicaExtraTagContenuti(); });
+    })();
+  </script>
+</th:block>
+</body>
+</html>

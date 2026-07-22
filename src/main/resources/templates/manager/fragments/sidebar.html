@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<nav th:fragment="sidebar" class="pc-sidebar">
+    <div class="navbar-wrapper">
+
+        <!-- Logo -->
+        <div class="m-header">
+            <a th:href="@{/admin}" class="b-brand text-primary">
+                <img th:src="@{/manager/assets/img/logos/logo.png}"
+                     class="img-fluid logo-lg w-75"
+                     alt="J-Platform Studiodomino"/>
+                <span class="badge bg-light-success rounded-pill ms-2 theme-version">v4.0</span>
+            </a>
+        </div>
+
+        <div class="navbar-content">
+
+            <!-- User Card -->
+            <div class="card pc-user-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <img th:src="${config.amministratore.avatar}"
+                                 alt="user-image"
+                                 class="user-avtar wid-45 rounded-circle"
+                                 style="width:45px; height:45px; object-fit:cover;" />
+                        </div>
+                        <div class="flex-grow-1 ms-3 me-2">
+                            <span th:text="${(config != null and config.amministratore != null) ? config.amministratore.nomeCompleto : 'Admin'}"> Admin </span>
+                            <small>Amministratore</small>
+                        </div>
+                        <a class="btn btn-icon btn-link-secondary avtar"
+                           data-bs-toggle="collapse"
+                           href="#pc_sidebar_userlink">
+                            <svg class="pc-icon"><use xlink:href="#custom-sort-outline"></use></svg>
+                        </a>
+                    </div>
+                    <div class="collapse pc-user-links" id="pc_sidebar_userlink">
+                        <div class="pt-3">
+                            <a th:href="@{/admin/amministratori/{id}/open(id=${config.amministratore.id})}">
+                                <i class="ti ti-user"></i>
+                                <span>Il mio Account</span>
+                            </a>
+                            <a href="javascript:void(0)" onclick="confirmAction('Sei sicuro di voler effettuare il logout?', function(){ window.location.href='/logout'; })">
+                                <i class="ti ti-power"></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Menu -->
+            <ul class="pc-navbar">
+
+                <li class="pc-item pc-caption">
+                    <label>Navigation</label>
+                </li>
+
+                <!-- Dashboard (sempre visibile) -->
+                <li class="pc-item" id="sb00">
+                    <a th:href="@{/admin}" class="pc-link">
+                        <span class="pc-micon">
+                            <svg class="pc-icon"><use xlink:href="#custom-status-up"></use></svg>
+                        </span>
+                        <span class="pc-mtext">Dashboard</span>
+                    </a>
+                </li>
+
+                <li class="pc-item pc-caption">
+                    <label>Admin Panel</label>
+                    <svg class="pc-icon"><use xlink:href="#custom-layer"></use></svg>
+                </li>
+
+                <!-- Mailbox - autorizzazione 13 -->
+                <li class="pc-item" id="sb01"
+                    th:if="${config?.amministratore?.hasRole(13)}">
+                    <a th:href="@{/admin/email}" class="pc-link">
+                        <span class="pc-micon">
+                            <svg class="pc-icon">
+                                <use th:href="@{|/${config.sito.path2}/svg/sprites.svg#it-mail|}"></use>
+                            </svg>
+                        </span>
+                        <span class="pc-mtext">Mailbox</span>
+                        <span class="badge bg-primary rounded-pill ms-auto"
+                              th:text="${config.numeroEmail}"
+                              th:if="${config.numeroEmail != null and config.numeroEmail > 0}">0</span>
+                    </a>
+                </li>
+
+                <!-- CMS Contenuti - autorizzazione 1 -->
+                <li class="pc-item" id="sb02"
+                    th:if="${config?.amministratore?.hasRole(1)}">
+                    <a th:href="@{/admin/sezioni}" class="pc-link">
+                        <span class="pc-micon">
+                            <svg class="pc-icon"><use xlink:href="#custom-document"></use></svg>
+                        </span>
+                        <span class="pc-mtext">CMS - Contenuti</span>
+                    </a>
+                </li>
+
+                <!-- CMS Media Library - autorizzazione 3 -->
+                <li class="pc-item" id="sb04"
+                    th:if="${config?.amministratore?.hasRole(3)}">
+                    <a th:href="@{/admin/filemanager}" class="pc-link">
+                        <span class="pc-micon">
+                            <svg class="pc-icon"><use th:href="@{|/${config.sito.path2}/svg/sprites.svg#it-camera|}"></use></svg>
+                        </span>
+                        <span class="pc-mtext">CMS - Media Library</span>
+                    </a>
+                </li>
+
+                <!-- CRM - autorizzazione 4 -->
+                <li class="pc-item pc-hasmenu" id="sb05"
+                    th:if="${config?.amministratore?.hasRole(4)}">
+
+                    <a href="javascript:void(0)" class="pc-link">
+                    <span class="pc-micon">
+                    <svg class="pc-icon"><use xlink:href="#custom-user"></use></svg>
+                    </span>
+                        <span class="pc-mtext">CRM</span>
+                        <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
+                    </a>
+
+                    <ul class="pc-submenu">
+
+                        <li class="pc-item" id="sb051">
+                            <a th:href="@{/admin/crm/dashboard}" class="pc-link">Dashboard CRM</a>
+                        </li>
+
+                        <li class="pc-item" id="sb052">
+                            <a th:href="@{/admin/crm/utenti}" class="pc-link">Gestione Utenti</a>
+                        </li>
+
+                        <li class="pc-item" id="sb053">
+                            <a th:href="@{/admin/crm/lead}" class="pc-link">Gestione LEAD</a>
+                        </li>
+
+                    </ul>
+                </li>
+
+                <!-- Amministratori - autorizzazione 5 -->
+                <li class="pc-item" id="sb06"
+                    th:if="${config?.amministratore?.hasRole(5)}">
+                    <a th:href="@{/admin/amministratori}" class="pc-link">
+                        <span class="pc-micon">
+                            <svg class="pc-icon">
+                                <use th:href="@{|/${config.sito.path2}/svg/sprites.svg#it-key|}"></use>
+                            </svg>
+                        </span>
+                        <span class="pc-mtext">Amministratori</span>
+                    </a>
+                </li>
+
+                <!-- Impostazioni - autorizzazione 6 (menu padre) -->
+                <li class="pc-item pc-hasmenu" id="sb061"
+                    th:if="${config?.amministratore?.hasRole(6)}">
+                    <a href="javascript:void(0)" class="pc-link">
+                        <span class="pc-micon">
+                            <svg class="pc-icon"><use xlink:href="#custom-setting-2"></use></svg>
+                        </span>
+                        <span class="pc-mtext">Impostazioni</span>
+                        <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
+                    </a>
+                    <ul class="pc-submenu">
+
+                        <!-- Configurazioni - autorizzazione 7 -->
+                        <li class="pc-item" id="sb062"
+                            th:if="${config?.amministratore?.hasRole(7)}">
+                            <a th:href="@{/admin/impostazioni/configurazioni}" class="pc-link">Configurazioni</a>
+                        </li>
+
+                        <!-- Gruppi - autorizzazione 8 -->
+                        <li class="pc-item" id="sb063"
+                            th:if="${config?.amministratore?.hasRole(8)}">
+                            <a th:href="@{/admin/impostazioni/gruppi}" class="pc-link">Gruppi</a>
+                        </li>
+
+                        <!-- Ruoli - autorizzazione 9 -->
+                        <li class="pc-item" id="sb064"
+                            th:if="${config?.amministratore?.hasRole(9)}">
+                            <a th:href="@{/admin/impostazioni/ruoli}" class="pc-link">Ruoli</a>
+                        </li>
+
+                        <!-- Numeratori - autorizzazione 10 -->
+                        <li class="pc-item" id="sb065"
+                            th:if="${config?.amministratore?.hasRole(10)}">
+                            <a th:href="@{/admin/impostazioni/numeratori}" class="pc-link">Numeratori</a>
+                        </li>
+
+                        <!-- Tipologia documenti - autorizzazione 11 -->
+                        <li class="pc-item" id="sb066"
+                            th:if="${config?.amministratore?.hasRole(11)}">
+                            <a th:href="@{/admin/tipologia-documenti}" class="pc-link">Tipologia documenti</a>
+                        </li>
+
+                        <!-- Mail Account - autorizzazione 12 -->
+                        <li class="pc-item" id="sb067"
+                            th:if="${config?.amministratore?.hasRole(12)}">
+                            <a th:href="@{/admin/account}" class="pc-link">Mail Account</a>
+                        </li>
+
+                    </ul>
+                </li>
+
+            </ul>
+
+            <hr class="my-3" />
+
+            <!-- Widget Riferimenti (mantenuto dal vecchio sidebar) -->
+            <div class="card pc-user-card">
+                <div class="card-body py-2">
+                    <p class="text-muted small mb-2 fw-semibold">Riferimenti</p>
+                    <ul class="list-unstyled m-0 small">
+                        <li><a href="https://www.w3schools.com/css/" target="_blank">W3Schools CSS</a></li>
+                        <li><a href="https://www.w3schools.com/html/" target="_blank">W3Schools HTML</a></li>
+                        <li><a href="https://www.w3schools.com/bootstrap4/" target="_blank">Bootstrap 4.0</a></li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    var currentUrl = window.location.pathname;
+
+    // Se siamo su una pagina "new" o "save", attiva il dashboard CRM
+    if (currentUrl.includes('/new/') || currentUrl.includes('/save')) {
+        var dashboardLink = document.querySelector('#sb051 .pc-link');
+        if (dashboardLink) {
+            dashboardLink.parentElement.classList.add('active');
+            var parentMenu = dashboardLink.closest('.pc-hasmenu');
+            if (parentMenu) {
+                parentMenu.classList.add('pc-trigger', 'active');
+                var submenu = parentMenu.querySelector('.pc-submenu');
+                if (submenu) submenu.style.display = 'block';
+            }
+        }
+        return;
+    }
+
+    var menuLinks = document.querySelectorAll(".pc-sidebar .pc-link");
+    menuLinks.forEach(function(link) {
+        var href = link.getAttribute("href");
+        if (!href || href === "javascript:void(0)") return;
+
+        var isActive = currentUrl === href || currentUrl.startsWith(href + "/");
+
+        if (isActive) {
+            link.parentElement.classList.add("active");
+            var parentMenu = link.closest(".pc-hasmenu");
+            if (parentMenu) {
+                parentMenu.classList.add("pc-trigger", "active");
+                var submenu = parentMenu.querySelector(".pc-submenu");
+                if (submenu) submenu.style.display = "block";
+            }
+        }
+    });
+});
+</script>
+</nav>
+</body>
+</html>

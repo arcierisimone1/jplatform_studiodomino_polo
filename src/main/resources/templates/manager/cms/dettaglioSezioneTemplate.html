@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="it"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{manager/layout/template}">
+<body>
+
+<div layout:fragment="content">
+
+    <!-- ========================================
+         SWITCH CONTENUTO SEZIONE
+         Routing basato su section.sectionType.page1
+         ======================================== -->
+    <div th:switch="${section.sectionType.page1}">
+
+        <!-- Sezione Web Standard-->
+        <th:block th:case="'dettaglioSezione'">
+            <th:block th:replace="~{manager/cms/sezioni/dettaglioSezione :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'dettaglioSezioneHome'">
+            <th:block th:replace="~{manager/cms/sezioni/dettaglioSezioneHome :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'dettaglioCorsoFormazione'">
+            <th:block th:replace="~{manager/cms/sezioni/dettaglioCorsoFormazione :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="'dettaglioModuloFormativo'">
+            <th:block th:replace="~{manager/cms/sezioni/dettaglioModuloFormativo :: content}"></th:block>
+        </th:block>
+
+        <th:block th:case="*">
+            <th:block th:replace="~{manager/cms/sezioni/dettaglioSezione :: content}"></th:block>
+        </th:block>
+
+    </div>
+
+</div>
+
+</body>
+</html>

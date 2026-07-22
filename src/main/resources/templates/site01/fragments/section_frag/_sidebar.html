@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!--
+  Sidebar comune riusata da tutte le sectionXxxSidebar.
+  Ricostruita sul markup reale del tema Educeet (it-shop-sidebar /
+  sidebar-widget / sidebar-widget-title / rc-post), come in
+  BlogSidebarArea.tsx del template originale. Le classi precedenti
+  (bg-very-light-gray, border-radius-6px, icon-feather-*, elements-social)
+  non esistono nel CSS di Educeet: la sidebar risultava senza stile,
+  come testo grezzo.
+-->
+<div th:fragment="widget" class="it-shop-sidebar position-sticky" style="top:100px;">
+
+    <!-- Widget: Info sezione -->
+    <div class="sidebar-widget mb-60">
+        <h4 class="sidebar-widget-title mb-25">Info</h4>
+
+        <div class="sidebar-widget-list mb-15" th:if="${section.modificato != null and !section.modificato.isEmpty()}">
+            <i class="fa-solid fa-calendar-days" style="margin-right:10px;"></i>
+            <span>Aggiornato il <span th:text="${section.modificato}">Data</span></span>
+        </div>
+
+        <div class="sidebar-widget-list mb-15" th:if="${section.hasContenuti()}">
+            <i class="fa-solid fa-file-lines" style="margin-right:10px;"></i>
+            <span>
+                <span th:text="${#lists.size(section.contenuti)}">0</span>
+                <span th:text="${#lists.size(section.contenuti) == 1} ? 'contenuto' : 'contenuti'">contenuti</span>
+            </span>
+        </div>
+
+        <div class="mt-25 pt-25" style="border-top:1px solid rgba(0,0,0,.08);">
+            <span class="d-block mb-15 fw-500">Condividi</span>
+            <div class="d-flex" style="gap:12px;">
+                <a th:href="@{'https://www.facebook.com/sharer/sharer.php?u=' + ${currentUrl}}" target="_blank" aria-label="Facebook">
+                    <i class="fa-brands fa-facebook-f"></i>
+                </a>
+                <a th:href="@{'https://wa.me/?text=' + ${currentUrl}}" target="_blank" aria-label="WhatsApp">
+                    <i class="fa-brands fa-whatsapp"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Widget: Contenuti correlati (ExtraTag slot 1, se popolato) -->
+    <div th:if="${section.extratag != null and section.extratag.hasContenutiInSlot(1)}" class="sidebar-widget mb-60">
+        <h4 class="sidebar-widget-title mb-25">Correlati</h4>
+        <div class="sidebar-widget-content">
+            <div class="sidebar-widget-post">
+                <ul>
+                    <li th:each="related : ${section.extratag.getExtraTagByNumber(1)}">
+                        <div class="rc-post">
+                            <div class="rc-post-content">
+                                <div class="rc-meta mb-10" th:if="${related.dataVisualizzata != null}">
+                                    <span><i class="fa-solid fa-calendar-days"></i> <span th:text="${related.dataVisualizzata}">Data</span></span>
+                                </div>
+                                <h5 class="rc-post-title">
+                                    <a class="border-line" th:href="@{'/' + ${related.url}}" th:text="${related.titolo}">Contenuto correlato</a>
+                                </h5>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Widget: Corsi in partenza (stessa fonte dati usata in home/side-panel) -->
+    <div th:if="${config != null and config.contenutiFront05 != null and !#lists.isEmpty(config.contenutiFront05)}" class="sidebar-widget mb-60">
+        <h4 class="sidebar-widget-title mb-25">Corsi in Partenza</h4>
+        <div class="sidebar-widget-content">
+            <div class="sidebar-widget-post">
+                <ul>
+                    <li th:each="articolo, iterStat : ${config.contenutiFront05}" th:if="${iterStat.index < 5}">
+                        <div class="rc-post">
+                            <div class="rc-post-thumb mb-20" th:if="${articolo.logo != null and !articolo.logo.isEmpty()}">
+                                <a th:href="@{'/' + ${articolo.url}}">
+                                    <img th:src="${config.imagesRepositoryWeb + articolo.logo}" th:alt="${articolo.titolo}"/>
+                                </a>
+                            </div>
+                            <div class="rc-post-content">
+                                <div class="rc-meta mb-10" th:if="${articolo.dataVisualizzata != null}">
+                                    <span><i class="fa-solid fa-calendar-days"></i> <span th:text="${articolo.dataVisualizzata}">Data</span></span>
+                                </div>
+                                <h5 class="rc-post-title">
+                                    <a class="border-line" th:href="@{'/' + ${articolo.url}}" th:text="${articolo.titolo}">Corso</a>
+                                </h5>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

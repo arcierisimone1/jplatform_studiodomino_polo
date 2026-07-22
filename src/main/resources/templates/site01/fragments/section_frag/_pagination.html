@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!--
+  Paginazione condivisa con il markup reale del tema Educeet
+  (it-pagination > ul > li[.current] > a), al posto delle classi
+  Bootstrap generiche (pagination-style-01/page-item/page-link)
+  che non esistono nel CSS di Educeet.
+  Richiede nel model: totalePagine, paginaCorrente, section.id
+-->
+<div th:fragment="nav" class="it-pagination pt-30" th:if="${totalePagine != null and totalePagine > 1}">
+    <nav aria-label="Paginazione contenuti">
+        <ul>
+            <li th:if="${paginaCorrente != null and paginaCorrente > 1}">
+                <a th:href="@{'/front/' + ${section.id} + '/' + ${paginaCorrente - 1}}"><i class="fa-regular fa-arrow-left"></i></a>
+            </li>
+            <li th:each="pageNum : ${#numbers.sequence(1, totalePagine)}"
+                th:classappend="${pageNum == paginaCorrente} ? 'current'">
+                <a th:href="@{'/front/' + ${section.id} + '/' + ${pageNum}}" th:text="${pageNum}">1</a>
+            </li>
+            <li th:if="${paginaCorrente != null and totalePagine != null and paginaCorrente < totalePagine}">
+                <a th:href="@{'/front/' + ${section.id} + '/' + ${paginaCorrente + 1}}"><i class="fa-regular fa-arrow-right"></i></a>
+            </li>
+        </ul>
+    </nav>
+</div>
+</body>
+</html>

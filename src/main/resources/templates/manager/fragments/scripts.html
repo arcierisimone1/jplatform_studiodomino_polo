@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<th:block th:fragment="scripts">
+    <!-- Required Js -->
+    <script th:src="@{/manager/assets/js/plugins/popper.min.js}"></script>
+    <script th:src="@{/manager/assets/js/plugins/simplebar.min.js}"></script>
+    <script th:src="@{/manager/assets/js/plugins/bootstrap.min.js}"></script>
+    <script th:src="@{/manager/assets/js/icon/custom-font.js}"></script>
+    <script th:src="@{/manager/assets/js/script.js}"></script>
+    <script th:src="@{/manager/assets/js/theme.js}"></script>
+    <script th:src="@{/manager/assets/js/plugins/feather.min.js}"></script>
+
+    <!--CUSTOM-->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script th:src="@{/manager/assets/js/plugins/dataTables.min.js}"></script>
+    <script th:src="@{/manager/assets/js/plugins/dataTables.bootstrap5.min.js}"></script>
+    <script src="https://code.jquery.com/ui/1.14.2/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+
+    <script th:src="@{/manager/assets/js/custom/treeview/jquery.cookie.js}"></script>
+    <script th:src="@{/manager/assets/js/custom/treeview/jquery.treeview.js}"></script>
+    <script th:src="@{/manager/assets/js/plugins/tinymce/tinymce.min.js}"></script>
+    <script th:src="@{/manager/assets/js/plugins/flatpickr.min.js}"></script>
+    <script th:src="@{/manager/assets/js/custom/j-custom.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+
+    <!-- Init Theme -->
+    <script>
+
+        change_box_container('false');
+        layout_caption_change('true');
+        layout_rtl_change('false');
+        if (document.querySelector(".preset-color")) {
+            preset_change('preset-1');
+        }
+        main_layout_change('vertical');
+    </script>
+
+
+</th:block>
+
+</body>
+</html>

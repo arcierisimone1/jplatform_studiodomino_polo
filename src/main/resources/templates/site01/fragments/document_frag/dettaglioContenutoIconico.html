@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- content.section.sectionType.page4 = 'dettaglioContenutoIconico' -->
+<th:block th:fragment="content">
+    <section id="page-content">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-9">
+                    <div class="d-flex align-items-start mb-30" style="gap:15px;" th:if="${post.riassunto != null and !post.riassunto.isEmpty()}">
+                        <i class="fa-solid fa-circle-check" style="font-size:32px; color: var(--it-theme-1); margin-top:4px;"></i>
+                        <span class="fw-600" style="font-size:18px;" th:text="${post.riassunto}">Riassunto</span>
+                    </div>
+                    <div th:if="${post.testo != null and !post.testo.isEmpty()}" th:utext="${post.testo}"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</th:block>
+</body>
+</html>

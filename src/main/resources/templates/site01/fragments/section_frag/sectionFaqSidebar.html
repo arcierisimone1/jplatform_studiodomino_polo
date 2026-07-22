@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- sectionType.page3 = 'sectionFaqSidebar' -->
+<th:block th:fragment="content">
+    <section class="pt-0">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 pe-5 lg-pe-3 md-pe-15px md-mb-50">
+
+                    <div th:if="${section.testo != null and !section.testo.isEmpty()}" th:utext="${section.testo}" class="mb-40"></div>
+
+                    <div class="accordion" id="faqAccordion" th:if="${section.hasContenuti()}">
+                        <div class="card" th:each="domanda, iterStat : ${section.contenuti}">
+                            <div class="card-header theme-bg" th:id="'faqHeading' + ${iterStat.index}">
+                                <h5 class="text-white m-0" data-toggle="collapse"
+                                    th:data-target="'#faqCollapse' + ${iterStat.index}"
+                                    th:aria-controls="'faqCollapse' + ${iterStat.index}"
+                                    style="cursor:pointer;" th:text="${domanda.titolo}">Domanda</h5>
+                            </div>
+                            <div th:id="'faqCollapse' + ${iterStat.index}"
+                                 th:class="${'collapse' + (iterStat.first ? ' show' : '')}"
+                                 th:aria-labelledby="'faqHeading' + ${iterStat.index}"
+                                 data-parent="#faqAccordion">
+                                <div class="card-body" th:utext="${domanda.testo}">Risposta</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-light text-center" th:if="${!section.hasContenuti()}">
+                        Nessuna domanda frequente disponibile al momento.
+                    </div>
+                </div>
+
+                <div class="col-lg-4 ps-4 lg-ps-15px">
+                    <div th:replace="~{site01/fragments/section_frag/_sidebar :: widget}"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</th:block>
+</body>
+</html>

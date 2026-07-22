@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="it"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{manager/layout/template}">
+<body>
+
+<div layout:fragment="content">
+
+  <div id="form_a_errors" class="alert alert-danger" style="display:none"></div>
+
+  <form th:action="@{/admin/crm/lead/{id}/inviaEmail(id=${registroLead.id})}"
+        method="post"
+        id="registrolead"
+        class="form-bordered">
+
+    <input type="hidden" name="id"               th:value="${registroLead.id}"/>
+    <input type="hidden" name="idutente" th:value="${registroLead.idutente}" id="idUtenteLead"/>
+    <input type="hidden" name="idleadstore"      th:value="${registroLead.idleadstore}"/>
+    <input type="hidden" name="idamministratore" th:value="${registroLead.idamministratore}"/>
+    <input type="hidden" name="store"            th:value="${registroLead.store}"/>
+    <input type="hidden" name="direzione"        th:value="${registroLead.direzione}"/>
+    <input type="hidden" name="stato"            value="4"/>
+    <input type="hidden" name="metatag"          value=""/>
+
+    <div class="card">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <h4 class="mb-0">Invio messaggio Email LEAD CRM</h4>
+
+        <div class="d-flex gap-2">
+          <button type="button"
+                  onclick="submitRegistroLeadEmail(event)"
+                  class="btn btn-primary">
+            <i class="ti ti-send me-1"></i> Invia Email
+          </button>
+
+          <a th:href="@{/admin/crm/dashboard}"
+             class="btn btn-outline-secondary">
+            <i class="ti ti-x me-1"></i> Esci
+          </a>
+        </div>
+      </div>
+
+      <div class="card-body">
+
+        <div th:if="${registroLead.id != null and registroLead.id != -1}"
+             class="alert alert-success">
+          <strong>Perfetto!</strong> Ho inviato il messaggio Email come da te richiesto.
+        </div>
+
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="tab_definizione">
+
+            <div class="card border mb-4">
+              <div class="card-body">
+                <h4 class="mb-4">
+                  Invio email a utente
+                  <code th:text="'#' + ${registroLead.id}"></code>
+                </h4>
+
+                <div class="row g-3">
+                  <div class="col-12">
+                    <label for="l3" class="form-label">Oggetto email risposta</label>
+                    <input type="text"
+                           name="l3"
+                           id="l3"
+                           class="form-control obbligatorio notAutocomplete"
+                           th:value="${registroLead.l3}"/>
+                  </div>
+
+                  <div class="col-lg-3">
+                    <label class="form-label">Destinatario</label>
+                    <div class="form-control-plaintext border rounded px-3 py-2 bg-light">
+                      <span th:text="${registroLead.utente != null ? registroLead.utente.nome : ''}"></span>
+                      <span th:text="${registroLead.utente != null ? registroLead.utente.cognome : ''}"></span>
+                      <span th:if="${registroLead.utente != null and registroLead.utente.email != null and registroLead.utente.email != ''}">
+                                                |
+                                                <span th:text="${registroLead.utente.email}"></span>
+                                            </span>
+                    </div>
+                  </div>
+
+                  <div class="col-lg-3">
+                    <label for="l1" class="form-label">Account di posta</label>
+                    <select name="l1" id="l1" class="form-select obbligatorio">
+                      <option value=""></option>
+                      <option th:each="acc : ${config != null and config.amministratore != null ? config.amministratore.idaccountemail : {}}"
+                              th:value="${acc}"
+                              th:text="${acc}"
+                              th:selected="${registroLead.l1 != null and registroLead.l1 == acc}">
+                      </option>
+                    </select>
+                  </div>
+
+                  <div class="col-lg-3">
+                    <label for="l2" class="form-label">Apponi firma messaggio</label>
+                    <select name="l2" id="l2" class="form-select obbligatorio">
+                      <option value="" th:selected="${registroLead.l2 == null or registroLead.l2 == ''}">Non specificato</option>
+                      <option value="0" th:selected="${registroLead.l2 == '0'}">NO</option>
+                      <option value="1" th:selected="${registroLead.l2 == '1'}">SI</option>
+                    </select>
+                  </div>
+
+                  <div class="col-lg-3">
+                    <label for="data" class="form-label">Data invio</label>
+                    <input type="text"
+                           name="data"
+                           id="data"
+                           class="form-control dataBase obbligatorio notAutocomplete"
+                           th:value="${registroLead.data}"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card border mb-4"
+                 th:if="${registroLead.idutente == null or registroLead.idutente <= 0}">
+              <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <h4 class="mb-0">Anagrafica</h4>
+
+                  <div class="d-flex gap-2">
+                    <a th:if="${registroLead.utente != null and registroLead.utente.id != null and registroLead.utente.id > 0}"
+                       th:href="@{/admin/crm/utenti/{id}(id=${registroLead.utente.id})}"
+                       class="btn btn-primary">
+                      <i class="ti ti-user me-1"></i> Dettaglio anagrafica
+                    </a>
+
+                    <a href="javascript:void(0)"
+                       onclick="resetAnagraficaLeadCRM()"
+                       class="btn btn-primary btn-sm">
+                      <i class="ti ti-user-minus me-1"></i> Rimuovi anagrafica
+                    </a>
+                  </div>
+                </div>
+
+                <div class="row g-3">
+                  <div class="col-12">
+                    <label for="ricercaUtenteNuovoLead" class="form-label">Ricerca anagrafica</label>
+                    <input type="text"
+                           id="ricercaUtenteNuovoLead"
+                           class="form-control js-autocomplete"
+                           data-url="/admin/crm/utenti/search"
+                           placeholder="Scrivi Cognome o Nome...">
+                  </div>
+
+                  <div class="col-lg-6">
+                    <label for="utentenome" class="form-label">Nome</label>
+                    <input type="text"
+                           name="utente.nome"
+                           id="utentenome"
+                           class="form-control obbligatorio"
+                           th:value="${registroLead.utente != null ? registroLead.utente.nome : ''}"/>
+                    <input type="hidden"
+                           name="utente.id"
+                           id="utenteid"
+                           th:value="${registroLead.utente != null ? registroLead.utente.id : ''}"/>
+                  </div>
+
+                  <div class="col-lg-6">
+                    <label for="utentecognome" class="form-label">Cognome</label>
+                    <input type="text"
+                           name="utente.cognome"
+                           id="utentecognome"
+                           class="form-control obbligatorio"
+                           th:value="${registroLead.utente != null ? registroLead.utente.cognome : ''}"/>
+                  </div>
+
+                  <div class="col-lg-4">
+                    <label for="utenteemail" class="form-label">Email</label>
+                    <input type="text"
+                           name="utente.email"
+                           id="utenteemail"
+                           class="form-control obbligatorio"
+                           th:value="${registroLead.utente != null ? registroLead.utente.email : ''}"/>
+                  </div>
+
+                  <div class="col-lg-4">
+                    <label for="utentetelefono" class="form-label">Telefono</label>
+                    <input type="text"
+                           name="utente.telefono"
+                           id="utentetelefono"
+                           class="form-control"
+                           th:value="${registroLead.utente != null ? registroLead.utente.telefono : ''}"/>
+                  </div>
+
+                  <div class="col-lg-4">
+                    <label for="utentetelefono2" class="form-label">Telefono 2</label>
+                    <input type="text"
+                           name="utente.telefono2"
+                           id="utentetelefono2"
+                           class="form-control"
+                           th:value="${registroLead.utente != null ? registroLead.utente.telefono2 : ''}"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card border">
+              <div class="card-body">
+                <h4 class="mb-3">Messaggio email</h4>
+
+                <div class="row">
+                  <div class="col-12">
+                                        <textarea name="notalead"
+                                                  id="notalead"
+                                                  class="tinymce5newsletter"
+                                                  rows="20"
+                                                  th:text="${registroLead.notalead}"></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </form>
+
+  <script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof initTinyMCE === 'function') {
+            if (typeof tinymce !== 'undefined' && tinymce.get('notalead')) {
+                tinymce.get('notalead').remove();
+            }
+            initTinyMCE('#notalead', false);
+        }
+
+        // Allegati
+        var upload = document.getElementById('uploadCrm');
+        if (upload) {
+            upload.addEventListener('change', function () {
+                var lista = document.getElementById('sortableAllegato');
+                Array.from(this.files).forEach(function (file) {
+                    var div = document.createElement('div');
+                    div.className = 'd-flex align-items-center gap-2 p-2 mb-2 bg-light rounded';
+                    div.innerHTML =
+                        '<i class="ti ti-file" style="font-size:18px;color:#6c757d;flex-shrink:0"></i>' +
+                        '<span>' + file.name + '</span>' +
+                        '<span class="text-muted small ms-1">(' + (file.size / 1024).toFixed(1) + ' KB)</span>' +
+                        '<span style="margin-left:auto;cursor:pointer;color:#adb5bd" ' +
+                              'onmouseover="this.style.color=\'#dc3545\'" ' +
+                              'onmouseout="this.style.color=\'#adb5bd\'" ' +
+                              'onclick="this.closest(\'div\').remove()">' +
+                            '<i class="ti ti-x"></i>' +
+                        '</span>';
+                    lista.appendChild(div);
+                });
+                this.value = '';
+            });
+        }
+    });
+
+    function submitRegistroLeadEmail(e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        var form = document.getElementById('registrolead');
+
+        if (typeof tinymce !== 'undefined') {
+            try {
+                if (typeof tinymce.triggerSave === 'function') {
+                    tinymce.triggerSave();
+                } else if (tinymce.editors && tinymce.editors.length > 0) {
+                    tinymce.editors.forEach(function(editor) { editor.save(); });
+                }
+            } catch(err) {
+                console.warn('TinyMCE save error:', err);
+            }
+        }
+
+        if (!form.checkValidity()) {
+            form.classList.add('was-validated');
+            if (typeof PNotify !== 'undefined') {
+                new PNotify({
+                    title: 'Attenzione!',
+                    text: 'Alcuni campi obbligatori richiedono un intervento!',
+                    type: 'error'
+                });
+            }
+            return false;
+        }
+
+        form.classList.add('was-validated');
+        form.submit();
+        return true;
+    }
+  </script>
+
+</div>
+</body>
+</html>

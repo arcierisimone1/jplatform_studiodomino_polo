@@ -1,0 +1,315 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{manager/layout/template}">
+<body>
+
+<div layout:fragment="content">
+
+    <div class="row">
+
+        <!-- LEFT: SIDEBAR -->
+        <div class="col-12 col-md-3">
+
+            <section class="card bg-light mb-4">
+                <div class="card" style="border-top: 3px solid #d9534f;">
+                    <div class="card-header bg-white">
+                        <h2 class="card-title" style="color: #d9534f; font-size: 1.5rem; margin-bottom: 0;">
+                            Titolario di classificazione
+                        </h2>
+                        <p class="card-subtitle text-muted" style="font-size: 0.9rem;">
+                            Elenco dei contenuti del CMS
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card-body">
+
+                    <div id="sidebar">
+                        <div id="sidetreecontrol">
+                            <a href="?#">Compatta</a> | <a href="?#">Espandi</a>
+                        </div>
+
+                        <ul id="tree">
+
+                            <!-- elencoSezioni = lista root -->
+                            <li th:each="aoo : ${elencoSezioni}">
+                                <a th:href="@{/admin/sezioni/{id}/preview(id=${aoo.id})}"
+                                   th:text="${aoo.titolo}"
+                                   th:classappend="${previewSezione != null and aoo.id == previewSezione.id} ? ' clicked' : ''">
+                                </a>
+
+                                <!-- sottolivello 1 -->
+                                <ul th:if="${aoo.emptySubsection == false}">
+                                    <li th:each="subaoo : ${aoo.subsection}">
+                                        <a th:href="@{/admin/sezioni/{id}/preview(id=${subaoo.id})}"
+                                           th:text="${subaoo.titolo}"
+                                           th:classappend="${previewSezione != null and subaoo.id == previewSezione.id} ? ' clicked' : ''">
+                                        </a>
+
+                                        <!-- sottolivello 2 -->
+                                        <ul th:if="${subaoo.emptySubsection == false}">
+                                            <li th:each="subsubaoo : ${subaoo.subsection}">
+                                                <a th:href="@{/admin/sezioni/{id}/preview(id=${subsubaoo.id})}"
+                                                   th:text="${subsubaoo.titolo}"
+                                                   th:classappend="${previewSezione != null and subsubaoo.id == previewSezione.id} ? ' clicked' : ''">
+                                                </a>
+
+                                                <!-- sottolivello 3 -->
+                                                <ul th:if="${subsubaoo.emptySubsection == false}">
+                                                    <li th:each="subsubsubaoo : ${subsubaoo.subsection}">
+                                                        <a th:href="@{/admin/sezioni/{id}/preview(id=${subsubsubaoo.id})}"
+                                                           th:text="${subsubsubaoo.titolo}"
+                                                           th:classappend="${previewSezione != null and subsubsubaoo.id == previewSezione.id} ? ' clicked' : ''">
+                                                        </a>
+                                                    </li>
+                                                </ul>
+
+                                            </li>
+                                        </ul>
+
+                                    </li>
+                                </ul>
+
+                            </li>
+
+                        </ul>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+
+        <!-- RIGHT: TABS -->
+        <div class="col-12 col-lg-9 mt-3 mt-lg-0">
+            <ul class="nav nav-tabs mb-0" id="elencoSezioni" role="tablist" style="border-bottom: 1px solid #0088cc;">
+                <li class="nav-item">
+                    <a class="nav-link active text-uppercase" id="welcomeCMS" data-bs-toggle="tab" href="#IDwelcomeCMS" role="tab" aria-controls="welcomeCMS" aria-selected="true">
+                        <i class="fas fa-star text-primary me-1"></i> Portale CMS
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-uppercase" id="sezioni-principali" data-bs-toggle="tab" href="#IDsezioni-principali" role="tab" aria-controls="sezioni-principali" aria-selected="false">
+                        Sezioni principali
+                    </a>
+                </li>
+            </ul>
+
+            <div class="tab-content border border-top-0 p-3" id="myTabelencoSezioni">
+                <div class="tab-pane fade show active" id="IDwelcomeCMS" role="tabpanel" aria-labelledby="welcomeCMS" style="min-height:300px">
+                    <section class="card mb-4" style="border:none;">
+                        <header class="card-header bg-primary" style="padding: 15px; border-radius: 5px 5px 0 0;">
+                            <div class="card-actions float-end">
+                                <a href="javascript:void(0);" class="card-action card-action-toggle text-white" data-bs-toggle="collapse" data-bs-target="#cardBodyCMS">
+                                    <i class="fas fa-minus"></i>
+                                </a>
+                            </div>
+                            <h2 class="card-title text-white" style="font-size: 1.4rem; font-weight: normal; margin: 0;">J-Platform Portal 4.0 | Content Management System</h2>
+                            <p class="card-subtitle text-white-50" style="font-size: 0.85rem; margin-top: 5px;">Gestione contenuti</p>
+                        </header>
+
+                        <div id="cardBodyCMS" class="collapse show">
+                            <div class="card-body border">
+                                <h3>Benvenuti in J-Platform Portal 4.0</h3>
+                                <p>
+                                    <img th:src="@{/manager/assets/img/logos/logo.png}"
+                                         width="200" height="63"
+                                         class="img-fluid float-start me-3">
+                                    J-Platform Portal 4.0 è un Content Management System (CMS) di nuova generazione,
+                                    completamente riscritto con tecnologie moderne per garantire prestazioni elevate,
+                                    sicurezza avanzata e massima manutenibilità. Il sistema consente di gestire in modo
+                                    semplice e intuitivo tutti i contenuti del sito web attraverso un pannello di controllo
+                                    accessibile da qualsiasi dispositivo, in qualsiasi momento.
+                                </p>
+
+                                <p>
+                                    Rispetto alle versioni precedenti, J-Platform 4.0 introduce un'architettura completamente
+                                    rinnovata basata su <strong>Spring Boot 3.x</strong>, il framework Java più diffuso e
+                                    affidabile per applicazioni enterprise. Il layer di persistenza è gestito tramite
+                                    <strong>Spring Data JPA / Hibernate</strong>, che garantisce compatibilità totale con
+                                    il database esistente e massima flessibilità nelle query. Il sistema di templating
+                                    adotta <strong>Thymeleaf</strong>, integrato nativamente con Spring, che sostituisce
+                                    il precedente motore JSP/Struts con un approccio moderno e type-safe.
+                                </p>
+
+                                <p>
+                                    L'interfaccia utente è stata completamente ridisegnata con <strong>Bootstrap 5</strong>,
+                                    il framework CSS più utilizzato al mondo, garantendo una navigazione responsive e
+                                    accessibile su desktop, tablet e smartphone. La gestione della sicurezza è affidata a
+                                    <strong>Spring Security</strong>, con supporto per autenticazione MD5 legacy, gestione
+                                    avanzata delle sessioni e protezione CSRF nativa. Il progetto è versionato su
+                                    <strong>GitHub</strong> e costruito con <strong>Apache Maven</strong> in architettura
+                                    multi-modulo, separando nettamente il front-end pubblico dal pannello di amministrazione.
+                                </p>
+
+                                <p>
+                                    I codici sorgente sono concessi con licenza
+                                    <a href="#bsd-license"><strong>BSD-3-Clause</strong></a>.
+                                </p>
+
+                                <div class="row mt-3">
+                                    <div class="col bg-white border border-primary p-2">
+                                        <img th:src="@{/manager/assets/img/licenses/java.jpg}"
+                                             class="img-fluid m-1" width="85" style="vertical-align:bottom;">
+                                        <img th:src="@{/manager/assets/img/licenses/tomcat.jpg}"
+                                             class="img-fluid m-1" width="85" style="vertical-align:bottom;">
+                                        <img th:src="@{/manager/assets/img/licenses/mysql.png}"
+                                             class="img-fluid m-1" width="85" style="vertical-align:bottom;">
+                                        <img th:src="@{/manager/assets/img/licenses/html.png}"
+                                             class="img-fluid m-1" width="130" style="vertical-align:bottom;">
+                                        <img th:src="@{/manager/assets/img/licenses/bootstrap.jpg}"
+                                             class="img-fluid m-1" width="85" style="vertical-align:bottom;">
+                                        <img th:src="@{/manager/assets/img/licenses/jquery.png}"
+                                             class="img-fluid m-1" width="85" style="vertical-align:bottom;">
+                                        <img th:src="@{/manager/assets/img/licenses/aws.png}"
+                                             class="img-fluid m-1" width="85" style="vertical-align:bottom;">
+                                        <img th:src="@{/manager/assets/img/licenses/awss3.png}"
+                                             class="img-fluid m-1" width="85" style="vertical-align:bottom;">
+                                        <img th:src="@{/manager/assets/img/licenses/awscloudfront.png}"
+                                             class="img-fluid m-1" width="85" style="vertical-align:bottom;">
+                                        <img th:src="@{/manager/assets/img/licenses/g-suite.png}"
+                                             class="img-fluid m-1" width="85" style="vertical-align:bottom;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </section>
+                    </div>
+
+                    <!-- TAB 2 -->
+                <div class="tab-pane fade" id="IDsezioni-principali" role="tabpanel" aria-labelledby="sezioni-principali" style="min-height:300px">
+
+                        <div class="d-flex justify-content-end mb-3">
+                            <a th:href="@{/admin/sezioni/new}"
+                               href="/admin/sezioni/new"
+                               class="mb-1 mt-1 mr-1 btn btn-sm btn-warning">
+                                <i class="fas fa-file-medical"></i> Nuova sezione
+                            </a>
+                        </div>
+
+                        <input type="hidden" name="BaseSectID" id="BaseSectID" value="0"/>
+                        <input type="hidden" name="ordineBaseSect" id="ordineBaseSect"/>
+                        <input type="hidden" name="ordineSect" id="ordineSect"/>
+
+                        <div class="table-responsive-lg">
+                            <table class="table table-striped table-bordered mb-0"  id="elencoSezioniPrincipale">
+                                <thead>
+                                <tr>
+                                    <th style="width:5%;">
+
+                                            <input type="checkbox" class="chSel_all inpt_c1"/>
+
+                                    </th>
+                                    <th>Pos</th>
+                                    <th>Titolo</th>
+                                    <th>Data</th>
+                                    <th>Stato</th>
+                                    <th>Azione</th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                <tr th:each="sect : ${elencoSezioni}">
+                                    <td class="check">
+                                        <input type="checkbox"
+                                               name="row_sel"
+                                               th:id="${'sectRow' + sect.id}"
+                                               class="inpt_c1"
+                                               th:value="${sect.id}"/>
+                                    </td>
+                                    <td th:text="${sect.position}">0</td>
+
+                                    <td>
+                                        <a th:href="@{/admin/sezioni/{id}(id=${sect.id})}"
+                                           th:text="${sect.titolo + ' (' + sect.id + ')'}">
+                                            Titolo (id)
+                                        </a>
+                                    </td>
+
+                                    <td th:text="${sect.data}">2026-02-19</td>
+
+                                    <td th:text="${sect.statoText}">ATTIVO</td>
+
+                                    <td>
+                                        <div class="dropdown">
+                                            <a href="javascript:void(0);"
+                                               class="text-muted"
+                                               data-bs-toggle="dropdown"
+                                               aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </a>
+
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li>
+                                                    <a class="dropdown-item" th:href="@{/admin/sezioni/{id}(id=${sect.id})}">
+                                                        <i class="fas fa-pencil-alt me-2"></i> Modifica
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" th:href="@{/admin/sezioni/{id}/preview(id=${sect.id})}">
+                                                        <i class="fas fa-sitemap me-2"></i> Struttura
+                                                    </a>
+                                                </li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li>
+                                                    <a class="dropdown-item text-danger"
+                                                       href="javascript:void(0);"
+                                                       th:onclick="|confermaEliminaSezione(${sect.id})|">
+                                                        <i class="fas fa-trash me-2"></i> Cancella
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+
+                            </table>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+<script th:inline="javascript">
+    function confermaEliminaSezione(id) {
+        confirmAction('Sei sicuro di voler eliminare questa sezione e tutte le sue sottosezioni?', function() {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/admin/sezioni/' + id + '/delete';
+            document.body.appendChild(form);
+            form.submit();
+        });
+    }
+
+    document.querySelector('.chSel_all')?.addEventListener('change', function() {
+        document.querySelectorAll('input[name="row_sel"]').forEach(cb => cb.checked = this.checked);
+    });
+</script>
+</div>
+<th:block layout:fragment="extra-js">
+    <script>
+        var s = document.createElement('style');
+       s.innerHTML = '@keyframes float { 0% { transform: translateY(0px) rotate(0deg); } 25% { transform: translateY(-10px) rotate(2deg); } 75% { transform: translateY(5px) rotate(-1deg); } 100% { transform: translateY(0px) rotate(0deg); } }';
+        document.head.appendChild(s);
+
+        function scuotiImmagini() {
+            console.log('scuotiImmagini: ' + document.querySelectorAll('#IDwelcomeCMS img:not(.no-animate)').length);
+            document.querySelectorAll('#IDwelcomeCMS img:not(.no-animate)').forEach(function(img, i) {
+                img.style.animation = 'none';
+                void img.offsetWidth;
+                img.style.animation = 'float 0.8s ease-in-out ' + (i * 0.2) + 's 2';
+            });
+        }
+
+        setTimeout(scuotiImmagini, 500);
+
+        document.getElementById('welcomeCMS')?.addEventListener('shown.bs.tab', function() {
+            setTimeout(scuotiImmagini, 100);
+        });
+    </script>
+</th:block>
+</body>
+</html>

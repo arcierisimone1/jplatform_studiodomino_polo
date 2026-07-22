@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- ========================================
+     FRAGMENT: Organigramma / Team
+     sectionType.page3 = 'sectionTeam'
+     Mostra le persone (contenuti di tipo 'dettaglioContenutoPersona') di
+     questa sezione come griglia "chi lavora con noi", sul markup reale
+     del tema Educeet (it-team-item), come in TeamOne.tsx del template originale.
+     Campi usati: titolo = nome persona, logo = foto, text1 = ruolo.
+     ======================================== -->
+<th:block th:fragment="content">
+
+    <section class="it-team-area z-index-1 pb-100">
+        <div class="container">
+
+            <div class="row mb-40" th:if="${section.testo != null and !section.testo.isEmpty()}">
+                <div class="col-lg-8 mx-auto text-center">
+                    <div th:utext="${section.testo}"></div>
+                </div>
+            </div>
+
+            <div class="row gx-35" th:if="${section.hasContenuti()}">
+                <div class="col-xxl-3 col-xl-4 col-lg-4 col-md-6 col-sm-6" th:each="persona : ${section.contenuti}">
+                    <div class="it-team-item text-center p-relative mb-35">
+                        <div class="it-team-content-box">
+                            <div class="it-team-content">
+                                <h4 class="it-team-title">
+                                    <a class="border-line" th:href="@{'/' + ${persona.url}}" th:text="${persona.titolo}">Nome Cognome</a>
+                                </h4>
+                                <span th:if="${persona.text1 != null and !persona.text1.isEmpty()}" th:utext="${persona.text1}">Ruolo</span>
+                            </div>
+                        </div>
+                        <div class="it-team-thumb p-relative border-radius-20">
+                            <img th:if="${persona.logo != null and !persona.logo.isEmpty()}"
+                                 class="w-100" th:src="${config.imagesRepositoryWeb + persona.logo}" th:alt="${persona.titolo}"/>
+                            <img th:unless="${persona.logo != null and !persona.logo.isEmpty()}"
+                                 class="w-100" th:src="@{/site01/assets/img/team/team-1-1.jpg}" th:alt="${persona.titolo}"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-light text-center" th:unless="${section.hasContenuti()}">
+                Nessuna persona inserita al momento.
+            </div>
+
+        </div>
+    </section>
+
+</th:block>
+</body>
+</html>

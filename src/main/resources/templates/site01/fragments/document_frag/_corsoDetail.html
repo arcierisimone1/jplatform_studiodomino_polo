@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!--
+  Dettaglio corso condiviso da:
+  dettaglioCatalogoCorso, dettaglioCatalogoAltaFormazioneCorso,
+  dettaglioCatalogoQualificaCorso, dettaglioCatalogoLaureaCorso, dettaglioCalendarioCorso.
+  Campi reali DatiBase: titolo, riassunto, testo, logo, dataVisualizzata, s5 (prezzo),
+  s6 (ore), text1 (sede), allegati, url, id.
+-->
+<div th:fragment="corso">
+
+    <section class="pt-0 pb-100">
+        <div class="container">
+            <div class="row gx-35">
+
+                <div class="col-lg-8">
+
+                    <div class="mb-30" th:if="${post.logo != null and !post.logo.isEmpty()}">
+                        <img th:src="${config.imagesRepositoryWeb + post.logo}" th:alt="${post.titolo}" class="w-100 border-radius-20"/>
+                    </div>
+
+                    <div class="it-course-meta d-flex flex-wrap gap-3 mb-30">
+                        <span th:if="${post.dataVisualizzata != null and !post.dataVisualizzata.isEmpty()}">
+                            <i class="fa-light fa-calendar" style="color: var(--it-theme-1); margin-right:5px;"></i>
+                            <span th:text="${post.dataVisualizzata}">Data avvio</span>
+                        </span>
+                        <span th:if="${post.s6 != null and !post.s6.isEmpty()}">
+                            <i class="fa-light fa-clock" style="color: var(--it-theme-1); margin-right:5px;"></i>
+                            <span th:text="${post.s6} + ' ore'">Ore</span>
+                        </span>
+                        <span th:if="${post.text1 != null and !post.text1.isEmpty()}">
+                            <i class="fa-light fa-map-marker-alt" style="color: var(--it-theme-1); margin-right:5px;"></i>
+                            <span th:text="${post.text1}">Sede</span>
+                        </span>
+                        <span th:if="${post.s5 != null and !post.s5.isEmpty()}">
+                            <i class="fa-light fa-euro-sign" style="color: var(--it-theme-1); margin-right:5px;"></i>
+                            <span th:text="${post.s5}">Prezzo</span>
+                        </span>
+                    </div>
+
+                    <div th:if="${post.riassunto != null and !post.riassunto.isEmpty()}" class="fw-600 mb-30" style="font-size:18px;" th:text="${post.riassunto}">Riassunto</div>
+
+                    <div th:if="${post.testo != null and !post.testo.isEmpty()}" th:utext="${post.testo}" class="mb-30"></div>
+
+                    <div class="sidebar-widget" th:if="${post.allegati != null and !post.allegati.isEmpty()}">
+                        <h5 class="sidebar-widget-title mb-20">Documenti e programma</h5>
+                        <ul class="list-unstyled mb-0">
+                            <li th:each="allegato : ${post.allegati}" class="pb-15 mb-15" style="border-bottom:1px solid rgba(0,0,0,.08);">
+                                <a th:href="@{'/filesId/' + ${allegato.id} + '/' + ${allegato.l2} + '/' + ${allegato.l1} + '.' + ${allegato.type}}"
+                                   target="_blank">
+                                    <img th:src="@{|/${config.sito.path2}/jsp/icons/32/${allegato.typeIcon}.png|}" alt="" style="margin-right:10px;"/>
+                                    <span th:text="${allegato.l1}">Nome file</span>
+                                    <span style="font-size:14px; margin-left:5px;" th:text="'(' + ${allegato.sizeKB} + ' Kb)'">(0 Kb)</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="position-sticky border-radius-20 overflow-hidden" style="top:100px;">
+                        <div th:replace="~{site01/fragments/jspUser/contatti2 :: contatti2(oggettoRichiesta=${post.titolo}, idOggettoRichiesta=${post.id})}"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+</div>
+</body>
+</html>

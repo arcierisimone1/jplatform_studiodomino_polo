@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- content.section.sectionType.page4 = 'dettaglioNewsDisplay' (variante essenziale, senza sidebar/condivisione) -->
+<th:block th:fragment="content">
+    <section id="page-content">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-9">
+                    <div class="it-blog-meta mb-15" th:if="${post.dataVisualizzata != null and !post.dataVisualizzata.isEmpty()}">
+                        <span th:text="${post.dataVisualizzata}">Data</span>
+                    </div>
+                    <div th:if="${post.testo != null and !post.testo.isEmpty()}" th:utext="${post.testo}"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</th:block>
+</body>
+</html>

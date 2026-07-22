@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- sectionType.page3 = 'sectionGallerySidebar' -->
+<th:block th:fragment="content">
+    <section class="pt-0">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 pe-5 lg-pe-3 md-pe-15px md-mb-50">
+
+                    <div th:if="${section.testo != null and !section.testo.isEmpty()}" th:utext="${section.testo}" class="mb-40"></div>
+
+                    <div class="row gx-15" th:if="${section.gallery != null and !section.gallery.isEmpty()}">
+                        <div class="col-lg-4 col-md-4 col-6 mb-15" th:each="img : ${section.gallery}">
+                            <a th:href="${config.imagesRepositoryWeb + img.fullpath}"
+                               data-lightbox-gallery="section-gallery"
+                               class="d-block border-radius-20 overflow-hidden">
+                                <img class="w-100"
+                                     th:src="${config.imagesRepositoryWeb + (img.paththumb != null and !img.paththumb.isEmpty() ? img.paththumb : img.fullpath)}"
+                                     th:alt="${img.didascalia != null ? img.didascalia : ''}"/>
+                            </a>
+                            <p class="text-center mt-5 mb-0" style="font-size:14px;" th:if="${img.didascalia != null and !img.didascalia.isEmpty()}" th:text="${img.didascalia}">Didascalia</p>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-light text-center" th:if="${section.gallery == null or section.gallery.isEmpty()}">
+                        Nessuna immagine disponibile al momento in questa galleria.
+                    </div>
+                </div>
+
+                <div class="col-lg-4 ps-4 lg-ps-15px">
+                    <div th:replace="~{site01/fragments/section_frag/_sidebar :: widget}"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</th:block>
+</body>
+</html>
