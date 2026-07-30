@@ -139,10 +139,10 @@
   --it-gray-3: #F5F7F9;
   --it-gray-4: #FFF8F4;
   --it-text-body: #6C757D;
-  --it-theme-1: #03594E;
-  --it-theme-2: #F8C62F;
-  --it-theme-3: #1AB69D;
-  --it-theme-4: #618269;
+  --it-theme-1: #0069BA;
+  --it-theme-2: #FFFFFF;
+  --it-theme-3: #3B93D6;
+  --it-theme-4: #5C7A99;
   --it-theme-5: #FE8235;
   --it-theme-6: #CD935A;
 }
@@ -598,7 +598,7 @@ input[type=color] {
 -----------------------------------------*/
 .it-btn-yellow {
   font-size: 16px;
-  padding: 15.5px 29px;
+  padding: 14.5px 28px;
   line-height: 1.1;
   font-weight: 500;
   text-align: center;
@@ -611,6 +611,7 @@ input[type=color] {
   color: var(--it-common-white);
   font-family: var(--it-ff-jost);
   background-color: var(--it-theme-2);
+  border: 1px solid var(--it-theme-1);
 }
 @media only screen and (min-width: 992px) and (max-width: 1199px), only screen and (min-width: 768px) and (max-width: 991px), (max-width: 767px) {
   .it-btn-yellow {

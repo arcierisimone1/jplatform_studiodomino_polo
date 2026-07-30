@@ -15,7 +15,7 @@
                             <span th:text="${articolo.dataVisualizzata}">Data</span>
                         </div>
                         <a th:href="@{'/' + ${articolo.url}}" class="border-line d-block fw-600 mb-10" style="font-size:19px;" th:text="${articolo.titolo}">Titolo</a>
-                        <p class="mb-0" th:if="${articolo.riassunto != null}" th:text="${articolo.riassunto}">Riassunto</p>
+                        <div class="mb-0" th:if="${articolo.riassunto != null}" th:utext="${articolo.riassunto}">Riassunto</div>
                     </div>
                 </div>
             </div>

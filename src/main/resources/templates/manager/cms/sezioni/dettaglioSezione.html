@@ -133,6 +133,7 @@
                                         <option value="0" th:selected="${section.menu1 == '0'}">Non visualizzare</option>
                                         <option value="1" th:selected="${section.menu1 == '1'}">Menu principale - Singolo</option>
                                         <option value="2" th:selected="${section.menu1 == '2'}">Menu principale - Dropdown</option>
+                                        <option value="4" th:selected="${section.menu1 == '4'}">Menu principale - Con immagini (tipo Home)</option>
                                     </select>
                                 </div>
                                 <div class="col-lg-3">
@@ -143,11 +144,18 @@
                                         <option value="2" th:selected="${section.menu5 == '2'}">Lista sottosezioni</option>
                                     </select>
                                 </div>
-                                <div class="col-lg-6">
+                                <div class="col-lg-3">
                                     <label for="tag" class="col-form-label">TAG</label>
                                     <input type="text" name="tag" id="tag"
                                            th:value="${section.tag}"
                                            class="form-control" onblur="ControlloCampoTag(this);">
+                                </div>
+                                <div class="col-lg-3">
+                                    <label for="position" class="col-form-label">Posizione nel menu</label>
+                                    <input type="number" name="position" id="position"
+                                           th:value="${section.position}"
+                                           class="form-control" placeholder="0">
+                                    <small class="form-text text-muted">Ordine tra le voci di menu allo stesso livello (crescente).</small>
                                 </div>
                             </div>
 

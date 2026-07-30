@@ -1,17 +1,44 @@
 <th:block th:fragment="content">
-    <!-- Content -->
-    <section id="page-content">
+    <!-- sectionType.page3 = 'sectionWeb' / 'default'
+         Pagina di solo testo, a piena larghezza, stile Educeet coerente
+         con le altre pagine istituzionali (sectionWebSidebar, sectionSubSectionList). -->
+    <section class="pt-0 pb-100">
         <div class="container">
+
+            <style>
+                .it-sectionweb-testo h1, .it-sectionweb-testo h2,
+                .it-sectionweb-testo h3, .it-sectionweb-testo h4 {
+                    font-size: 26px;
+                    font-family: var(--it-ff-spartan-semibold);
+                    margin: 30px 0 15px;
+                }
+                .it-sectionweb-testo h1:first-child, .it-sectionweb-testo h2:first-child,
+                .it-sectionweb-testo h3:first-child, .it-sectionweb-testo h4:first-child { margin-top: 0; }
+                .it-sectionweb-testo p { margin-bottom: 20px; }
+                .it-sectionweb-testo ul { margin: 0 0 30px; padding: 0; }
+                .it-sectionweb-testo ul li {
+                    list-style: none;
+                    position: relative;
+                    padding-left: 32px;
+                    margin-bottom: 15px;
+                }
+                .it-sectionweb-testo ul li::before {
+                    content: "\2713";
+                    position: absolute;
+                    left: 0;
+                    top: -1px;
+                    color: var(--it-theme-2);
+                    font-weight: 700;
+                    font-size: 18px;
+                }
+                .it-sectionweb-testo img { max-width: 100%; height: auto; }
+            </style>
+
             <div class="row">
-                <div class="col-lg-12">
-                    <div th:utext="${section.testo}"></div>
+                <div class="col-lg-10 col-xl-9 mx-auto">
+                    <div class="it-sectionweb-testo" th:utext="${section.testo}"></div>
                 </div>
             </div>
         </div>
     </section>
-    <!-- end: Content -->
 </th:block>
-
-
-
-

@@ -25,8 +25,8 @@
                                     <h5 class="it-blog-title mb-15">
                                         <a class="border-line" th:href="@{'/' + ${articolo.url}}" th:text="${articolo.titolo}">Titolo</a>
                                     </h5>
-                                    <p class="mb-20" th:if="${articolo.riassunto != null}" th:text="${articolo.riassunto}"
-                                       style="overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;">Riassunto</p>
+                                    <div class="mb-20" th:if="${articolo.riassunto != null}" th:utext="${articolo.riassunto}"
+                                       style="overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;">Riassunto</div>
                                     <div class="it-blog-btn">
                                         <a th:href="@{'/' + ${articolo.url}}" class="it-btn-yellow">
                                             <span><span class="text-1">Leggi la notizia</span><span class="text-2">Leggi la notizia</span></span>

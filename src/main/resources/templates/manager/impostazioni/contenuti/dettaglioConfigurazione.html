@@ -275,18 +275,18 @@
                     <td th:text="${slot}"></td>
                     <td>
                       <input type="text"
-                             th:name="|contenutiFront0${slot}|"
+                             th:name="|contenutiFront${slot < 10 ? '0' + slot : slot}|"
                              th:value="${sito.getContenutiFrontBySlot(slot)}"
                              class="form-control"/>
                     </td>
                     <td>
                       <input type="text"
-                             th:name="|maxContenutiFront0${slot}|"
+                             th:name="|maxContenutiFront${slot < 10 ? '0' + slot : slot}|"
                              th:value="${sito.getMaxContenutiFrontBySlot(slot)}"
                              class="form-control"/>
                     </td>
                     <td>
-                      <select th:name="|contenutiOrdineFront0${slot}|" class="form-control">
+                      <select th:name="|contenutiOrdineFront${slot < 10 ? '0' + slot : slot}|" class="form-control">
                         <option value="datasql asc, id ASC"
                                 th:selected="${sito.getContenutiOrdineFrontBySlot(slot) == 'datasql asc, id ASC'}">Crescente dataSql</option>
                         <option value="datasql desc, id ASC"

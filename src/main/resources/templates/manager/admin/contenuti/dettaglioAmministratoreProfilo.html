@@ -94,7 +94,7 @@
                 <div class="row form-group">
                   <div class="col-lg-6 text-center">
                     <img id="avatar-img"
-                         th:src="${amministratoriUtente.avatar}"
+                         th:src="@{${amministratoriUtente.avatar}(v=${#dates.createNow().time})}"
                          alt="Avatar" style="width:150px" class="img-thumbnail mb-2"><br>
                     <a href="javascript:void(0);" onclick="apriModalAvatar()"
                        class="btn btn-sm btn-light-primary mb-1">

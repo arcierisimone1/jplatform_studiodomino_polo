@@ -22,7 +22,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-shrink-0">
-                            <img th:src="${config.amministratore.avatar}"
+                            <img th:src="@{${config.amministratore.avatar}(v=${#dates.createNow().time})}"
                                  alt="user-image"
                                  class="user-avtar wid-45 rounded-circle"
                                  style="width:45px; height:45px; object-fit:cover;" />

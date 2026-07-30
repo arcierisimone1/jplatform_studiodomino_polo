@@ -35,4 +35,17 @@
 <script th:src="@{|/${config.sito.path2}/js/components/leaflet/leaflet.js|}"></script>
 <script th:src="@{|/${config.sito.path2}/js/scuole.js|}"></script>
 
+<!-- WOW.js: anima gli elementi con classe "wow" (es. "wow itfadeUp") quando
+     entrano nel viewport, riprendendo le stesse animazioni Educeet
+     (custom-animation.css, già incluso in head.html). Riusa il file già
+     presente nel progetto per il pannello manager. -->
+<script th:src="@{/manager/assets/js/plugins/wow.min.js}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof WOW === 'function') {
+            new WOW({live: false}).init();
+        }
+    });
+</script>
+
 </th:block>

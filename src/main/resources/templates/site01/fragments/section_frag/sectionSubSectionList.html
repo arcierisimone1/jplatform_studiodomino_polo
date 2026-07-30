@@ -2,44 +2,103 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 <!-- sectionType.page3 = 'sectionSubSectionList'
-     Ricostruita con le card corso reali di Educeet (it-course-item),
-     al posto di card/box-shadow-small/hover-box/icon-feather che non
-     esistono nel CSS di Educeet. -->
+     Pagina istituzionale/informativa (testo + eventuale elenco puntato + card
+     sottosezioni), niente più sidebar Info/Corsi in Partenza (fuori contesto
+     su pagine non legate ai corsi). Testo a piena larghezza in stile
+     "PrivacyPolicyArea" di Educeet (titoli it-details-title, elenchi con
+     segno di spunta), card sottosezioni con le classi reali it-course-item. -->
 <th:block th:fragment="content">
     <section class="pt-0 pb-100">
         <div class="container">
-            <div class="row gx-35">
-                <div class="col-lg-8">
 
-                    <div th:if="${section.testo != null and !section.testo.isEmpty()}" th:utext="${section.testo}" class="mb-40"></div>
+            <style>
+                .it-subsectionlist-testo h1, .it-subsectionlist-testo h2,
+                .it-subsectionlist-testo h3, .it-subsectionlist-testo h4 {
+                    font-size: 26px;
+                    font-family: var(--it-ff-spartan-semibold);
+                    margin: 30px 0 15px;
+                }
+                .it-subsectionlist-testo h1:first-child, .it-subsectionlist-testo h2:first-child,
+                .it-subsectionlist-testo h3:first-child, .it-subsectionlist-testo h4:first-child {
+                    margin-top: 0;
+                }
+                .it-subsectionlist-testo p { margin-bottom: 20px; }
+                .it-subsectionlist-testo ul { margin: 0 0 30px; padding: 0; }
+                .it-subsectionlist-testo ul li {
+                    list-style: none;
+                    position: relative;
+                    padding-left: 32px;
+                    margin-bottom: 15px;
+                }
+                .it-subsectionlist-testo ul li::before {
+                    content: "\2713";
+                    position: absolute;
+                    left: 0;
+                    top: -1px;
+                    color: var(--it-theme-2);
+                    font-weight: 700;
+                    font-size: 18px;
+                }
+                .it-subsectionlist-testo img { max-width: 100%; height: auto; }
 
-                    <div class="row row-cols-1 row-cols-md-2 gx-35" th:if="${section.hasSubsections()}">
-                        <div class="col mb-35" th:each="sub : ${section.subsection}">
-                            <div class="it-course-item">
-                                <div class="it-course-thumb z-index-1 border-radius-20" th:if="${sub.logo != null and !sub.logo.isEmpty()}">
-                                    <a th:href="@{'/' + ${sub.url}}">
-                                        <img class="w-100" th:src="${config.imagesRepositoryWeb + sub.logo}" th:alt="${sub.titolo}"/>
-                                    </a>
-                                </div>
-                                <div class="it-course-content p-relative">
-                                    <h5 class="it-course-title mb-20">
-                                        <a class="border-line" th:href="@{'/' + ${sub.url}}" th:text="${sub.titolo}">Sottosezione</a>
-                                    </h5>
-                                    <p class="mb-0" th:if="${sub.riassunto != null and !sub.riassunto.isEmpty()}" th:text="${sub.riassunto}">Descrizione</p>
-                                </div>
-                            </div>
+                /* Le classi Bootstrap "row-cols-*" non esistono in questa build di
+                   bootstrap.min.css (rimosse/purge), quindi non garantivano nessuna
+                   larghezza/allineamento alle card: bastava un'immagine con proporzioni
+                   diverse dalle altre (es. il badge del certificato C2) per far
+                   comportare quella card in modo imprevedibile. Griglia CSS esplicita,
+                   più altezza fissa sull'immagine, cosi tutte le card sono identiche
+                   indipendentemente dal file caricato. */
+                .it-subsectionlist-grid {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 35px;
+                }
+                @media (max-width: 991px) {
+                    .it-subsectionlist-grid { grid-template-columns: repeat(2, 1fr); }
+                }
+                @media (max-width: 575px) {
+                    .it-subsectionlist-grid { grid-template-columns: 1fr; }
+                }
+                .it-subsectionlist-grid .it-course-thumb img {
+                    width: 100%;
+                    height: 200px;
+                    object-fit: cover;
+                }
+            </style>
+
+            <div class="row">
+                <div class="col-lg-10 col-xl-9 mx-auto">
+                    <div th:if="${section.testo != null and !section.testo.isEmpty()}"
+                         class="it-subsectionlist-testo mb-30" th:utext="${section.testo}"></div>
+                </div>
+            </div>
+
+            <div class="it-subsectionlist-grid" th:if="${section.hasSubsections()}">
+                <div th:each="sub : ${section.subsection}">
+                    <div class="it-course-item">
+                        <div class="it-course-thumb z-index-1 border-radius-20" th:if="${sub.logo != null and !sub.logo.isEmpty()}">
+                            <a th:href="@{'/' + ${sub.url}}">
+                                <img th:src="${config.imagesRepositoryWeb + sub.logo}" th:alt="${sub.titolo}"/>
+                            </a>
+                        </div>
+                        <div class="it-course-content p-relative">
+                            <h5 class="it-course-title mb-20">
+                                <a class="border-line" th:href="@{'/' + ${sub.url}}" th:text="${sub.titolo}">Sottosezione</a>
+                            </h5>
+                            <div class="mb-0" th:if="${sub.riassunto != null and !sub.riassunto.isEmpty()}" th:utext="${sub.riassunto}">Descrizione</div>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <div class="alert alert-light text-center" th:if="${!section.hasSubsections()}">
+            <div class="row" th:if="${!section.hasSubsections() and (section.testo == null or section.testo.isEmpty())}">
+                <div class="col-lg-10 col-xl-9 mx-auto">
+                    <div class="alert alert-light text-center">
                         Nessuna sottosezione disponibile al momento.
                     </div>
                 </div>
-
-                <div class="col-lg-4">
-                    <div th:replace="~{site01/fragments/section_frag/_sidebar :: widget}"></div>
-                </div>
             </div>
+
         </div>
     </section>
 </th:block>

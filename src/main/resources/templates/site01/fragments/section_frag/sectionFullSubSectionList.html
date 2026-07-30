@@ -21,7 +21,7 @@
                             <h5 class="it-course-title mb-20">
                                 <a class="border-line" th:href="@{'/' + ${sub.url}}" th:text="${sub.titolo}">Sottosezione</a>
                             </h5>
-                            <p class="mb-0" th:if="${sub.riassunto != null and !sub.riassunto.isEmpty()}" th:text="${sub.riassunto}">Descrizione</p>
+                            <div class="mb-0" th:if="${sub.riassunto != null and !sub.riassunto.isEmpty()}" th:utext="${sub.riassunto}">Descrizione</div>
                         </div>
                     </div>
                 </div>

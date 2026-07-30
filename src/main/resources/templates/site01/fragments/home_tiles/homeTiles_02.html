@@ -12,7 +12,8 @@
             </div>
 
             <div class="row gx-35">
-                <div class="col-xl-3 col-lg-4 col-md-6" th:each="articolo : ${config.contenutiFront05}">
+                <div class="col-xl-3 col-lg-4 col-md-6" th:each="articolo : ${config.contenutiFront05}"
+                     th:if="${articolo.dataSql != null and articolo.dataSql.year == 2026}">
                     <div class="it-course-item mb-35">
                         <div class="it-course-thumb z-index-1 border-radius-20">
                             <a th:href="@{'/' + ${articolo.url}}" th:if="${articolo.logo != null and !articolo.logo.isEmpty()}">

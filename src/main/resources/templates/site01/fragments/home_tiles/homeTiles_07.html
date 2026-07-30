@@ -92,7 +92,7 @@
                     <a class="border-line" th:href="@{'/' + ${articolo.url}}" th:text="${articolo.titolo}">Titolo</a>
                   </h6>
                   <span class="d-block small text-muted" th:text="${articolo.dataVisualizzata}">Data</span>
-                  <p class="mb-0" th:text="${articolo.riassunto}">Riassunto</p>
+                  <div class="mb-0" th:utext="${articolo.riassunto}">Riassunto</div>
                 </div>
               </div>
             </th:block>

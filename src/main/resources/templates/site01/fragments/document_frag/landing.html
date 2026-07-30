@@ -12,7 +12,7 @@
             <div class="row justify-content-center text-center">
                 <div class="col-lg-8 text-white">
                     <h1 class="fw-600 mb-20" th:text="${post.titolo}">Titolo</h1>
-                    <p style="font-size:19px;" th:if="${post.riassunto != null and !post.riassunto.isEmpty()}" th:text="${post.riassunto}">Sottotitolo</p>
+                    <div style="font-size:19px;" th:if="${post.riassunto != null and !post.riassunto.isEmpty()}" th:utext="${post.riassunto}">Sottotitolo</div>
                     <a th:href="@{/front/370/Contatti}" class="it-btn-yellow theme-bg mt-20">
                         <span><span class="text-1">Richiedi informazioni</span><span class="text-2">Richiedi informazioni</span></span>
                     </a>

@@ -45,11 +45,11 @@
                  th:text="${item.titolo}">Titolo</a>
             </h3>
 
-            <p class="text-muted mb-0"
+            <div class="text-muted mb-0"
                th:if="${item.riassunto != null && !item.riassunto.isEmpty()}"
-               th:text="${item.riassunto}">
+               th:utext="${item.riassunto}">
               Riassunto...
-            </p>
+            </div>
           </div>
         </div>
       </div>

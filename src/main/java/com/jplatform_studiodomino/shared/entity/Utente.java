@@ -154,7 +154,7 @@ public class Utente implements Serializable {
     @Transient
     private String[] ruoliA5;
 
-    @Transient
+    @Column(name = "image", columnDefinition = "LONGTEXT")
     private String image;
 
     @Transient

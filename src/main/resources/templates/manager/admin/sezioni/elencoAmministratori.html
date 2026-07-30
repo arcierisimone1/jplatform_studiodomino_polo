@@ -131,7 +131,7 @@
               <td>
                 <a th:href="@{/admin/amministratori/{id}/open(id=${row.id})}"
                    rel="highslide-iframe" title="Modifica">
-                  <img th:src="${row.avatar}"
+                  <img th:src="@{${row.avatar}(v=${#dates.createNow().time})}"
                        class="rounded-circle miniAvatar float-left" alt="">
                   <span th:text="${row.cognome}">-</span>
                   <span th:text="${row.nome}">-</span>

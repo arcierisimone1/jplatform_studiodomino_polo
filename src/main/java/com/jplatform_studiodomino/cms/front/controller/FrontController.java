@@ -9,7 +9,9 @@ import com.jplatform_studiodomino.cms.front.dto.FrontContentFilter;
 import com.jplatform_studiodomino.cms.front.service.*;
 import com.jplatform_studiodomino.cms.service.ContentService;
 import com.jplatform_studiodomino.shared.config.Configurazione;
+import com.jplatform_studiodomino.shared.entity.Utente;
 import com.jplatform_studiodomino.shared.service.ConfigurazioneService;
+import com.jplatform_studiodomino.shared.service.UtenteService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -18,6 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * FrontController - Entry point principale front-end pubblico
@@ -49,6 +53,7 @@ public class FrontController {
     private final FrontDispatchService dispatchService;
     private final CookieNavigationService cookieService;
     private final ContentService contentService;
+    private final UtenteService utenteService;
 
     // =====================================================================
     // ENTRY POINT LEGACY  /front?pid=123
@@ -297,6 +302,26 @@ public class FrontController {
                     section, config.getSito().getId().toString()));
             model.addAttribute("section", section);
             model.addAttribute("contents", section.getContenuti());
+
+            // ===== TEAM AZIENDALE (solo per la sezione "L'azienda", id 313) =====
+            // Mostra gli Amministratori del gestionale come "il nostro team",
+            // riusando gli stessi dati/foto già gestiti in /admin/amministratori.
+            // NB: era id 312 finché la sezione "L'azienda" non è stata fusa con
+            // "Sede" e ha preso l'id 313 di quest'ultima.
+            if (section.getId() != null && section.getId() == 313) {
+                try {
+                    List<Utente> team = utenteService.getAllUtenti().stream()
+                            .sorted((a, b) -> {
+                                String ca = a.getCognome() != null ? a.getCognome() : "";
+                                String cb = b.getCognome() != null ? b.getCognome() : "";
+                                return ca.compareToIgnoreCase(cb);
+                            })
+                            .toList();
+                    model.addAttribute("team", team);
+                } catch (Exception e) {
+                    log.warn("Errore caricamento team amministratori per sezione azienda", e);
+                }
+            }
 
             model.addAttribute("ricercaQ",      q   != null ? q   : "");
             model.addAttribute("ricercaDal",     dal != null ? dal : "");

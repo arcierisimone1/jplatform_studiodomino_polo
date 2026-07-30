@@ -59,20 +59,30 @@
             <th:block th:replace="~{site01/fragments/section_frag/sectionCalendarioSidebar :: content}"></th:block>
         </th:block>
 
+        <!-- I 4 tipi di catalogo (generico, Alta Formazione, Qualifica, Laurea) usavano
+             4 file .html identici parola per parola: unificati in un solo template,
+             sectionCatalogoSidebar.html, riusato per tutti e 4 i case. NB: un th:case
+             non supporta una condizione booleana con "or" tra più stringhe come avevo
+             scritto prima (veniva sempre ignorato, cadendo nel fallback "non gestito") —
+             servono 5 th:case separati, uno per ogni valore reale. -->
         <th:block th:case="'sectionCatalogoSidebar'">
             <th:block th:replace="~{site01/fragments/section_frag/sectionCatalogoSidebar :: content}"></th:block>
         </th:block>
 
+        <th:block th:case="'sectionCatalogoLiberiSidebar'">
+            <th:block th:replace="~{site01/fragments/section_frag/sectionCatalogoSidebar :: content}"></th:block>
+        </th:block>
+
         <th:block th:case="'sectionCatalogoAltaFormazioneSidebar'">
-            <th:block th:replace="~{site01/fragments/section_frag/sectionCatalogoAltaFormazioneSidebar :: content}"></th:block>
+            <th:block th:replace="~{site01/fragments/section_frag/sectionCatalogoSidebar :: content}"></th:block>
         </th:block>
 
         <th:block th:case="'sectionCatalogoQualificaSidebar'">
-            <th:block th:replace="~{site01/fragments/section_frag/sectionCatalogoQualificaSidebar :: content}"></th:block>
+            <th:block th:replace="~{site01/fragments/section_frag/sectionCatalogoSidebar :: content}"></th:block>
         </th:block>
 
         <th:block th:case="'sectionCatalogoLaureaSidebar'">
-            <th:block th:replace="~{site01/fragments/section_frag/sectionCatalogoLaureaSidebar :: content}"></th:block>
+            <th:block th:replace="~{site01/fragments/section_frag/sectionCatalogoSidebar :: content}"></th:block>
         </th:block>
 
         <th:block th:case="'sectionSubSectionList'">
@@ -95,8 +105,15 @@
             <th:block th:replace="~{site01/fragments/section_frag/sectionTeam :: content}"></th:block>
         </th:block>
 
-        <th:block th:case="'sectionAzienda'">
-            <th:block th:replace="~{site01/fragments/section_frag/sectionAzienda :: content}"></th:block>
+        <!-- Fallback diagnostico: se nessun case corrisponde, prima la pagina restava
+             completamente bianca senza nessun indizio del perché. Mostriamo il valore
+             tecnico reale così è immediato capire quale stringa manca dallo switch. -->
+        <th:block th:case="*">
+            <div class="container pt-50 pb-100 text-center">
+                <div class="alert alert-warning d-inline-block">
+                    Tipo di sezione non gestito dal template: <code th:text="${section.sectionType != null ? section.sectionType.page3 : 'null'}">?</code>
+                </div>
+            </div>
         </th:block>
 
     </div>

@@ -9,38 +9,23 @@
   (bg-very-light-gray, border-radius-6px, icon-feather-*, elements-social)
   non esistono nel CSS di Educeet: la sidebar risultava senza stile,
   come testo grezzo.
+
+  Widget "Corsi in Partenza" mostrato SOLO per le pagine di
+  corsi/catalogo (section.sectionType.page3 tra i 5 tipi Catalogo).
+  Per tutte le altre pagine viene mostrato invece un widget con le
+  altre sezioni della stessa categoria di menu (dropdown) di primo
+  livello a cui la pagina corrente appartiene, come nel vecchio sito
+  (es. "Tech&Learn" mostra le altre voci del dropdown "Home").
+  NB: non si può usare la sintassi di selezione SpEL ".?[...]" per
+  cercare la sezione di primo livello in config.sezioniFront perché al
+  suo interno i nomi non prefissati (e anche "#nomeVar") vengono
+  risolti contro l'elemento della lista e non contro le variabili
+  locali di Thymeleaf: si ottiene sempre lista vuota. Si usa quindi un
+  semplice th:each + th:if.
 -->
-<div th:fragment="widget" class="it-shop-sidebar position-sticky" style="top:100px;">
-
-    <!-- Widget: Info sezione -->
-    <div class="sidebar-widget mb-60">
-        <h4 class="sidebar-widget-title mb-25">Info</h4>
-
-        <div class="sidebar-widget-list mb-15" th:if="${section.modificato != null and !section.modificato.isEmpty()}">
-            <i class="fa-solid fa-calendar-days" style="margin-right:10px;"></i>
-            <span>Aggiornato il <span th:text="${section.modificato}">Data</span></span>
-        </div>
-
-        <div class="sidebar-widget-list mb-15" th:if="${section.hasContenuti()}">
-            <i class="fa-solid fa-file-lines" style="margin-right:10px;"></i>
-            <span>
-                <span th:text="${#lists.size(section.contenuti)}">0</span>
-                <span th:text="${#lists.size(section.contenuti) == 1} ? 'contenuto' : 'contenuti'">contenuti</span>
-            </span>
-        </div>
-
-        <div class="mt-25 pt-25" style="border-top:1px solid rgba(0,0,0,.08);">
-            <span class="d-block mb-15 fw-500">Condividi</span>
-            <div class="d-flex" style="gap:12px;">
-                <a th:href="@{'https://www.facebook.com/sharer/sharer.php?u=' + ${currentUrl}}" target="_blank" aria-label="Facebook">
-                    <i class="fa-brands fa-facebook-f"></i>
-                </a>
-                <a th:href="@{'https://wa.me/?text=' + ${currentUrl}}" target="_blank" aria-label="WhatsApp">
-                    <i class="fa-brands fa-whatsapp"></i>
-                </a>
-            </div>
-        </div>
-    </div>
+<div th:fragment="widget" class="it-shop-sidebar position-sticky" style="top:100px;"
+     th:with="isCorso=${section != null and section.sectionType != null and section.sectionType.page3 != null and (section.sectionType.page3 == 'sectionCatalogoSidebar' or section.sectionType.page3 == 'sectionCatalogoLiberiSidebar' or section.sectionType.page3 == 'sectionCatalogoAltaFormazioneSidebar' or section.sectionType.page3 == 'sectionCatalogoQualificaSidebar' or section.sectionType.page3 == 'sectionCatalogoLaureaSidebar')},
+              topId=${breadcrumb != null and breadcrumb.items != null and !breadcrumb.items.isEmpty() ? breadcrumb.items[0].id : (section != null ? section.id : null)}">
 
     <!-- Widget: Contenuti correlati (ExtraTag slot 1, se popolato) -->
     <div th:if="${section.extratag != null and section.extratag.hasContenutiInSlot(1)}" class="sidebar-widget mb-60">
@@ -65,8 +50,8 @@
         </div>
     </div>
 
-    <!-- Widget: Corsi in partenza (stessa fonte dati usata in home/side-panel) -->
-    <div th:if="${config != null and config.contenutiFront05 != null and !#lists.isEmpty(config.contenutiFront05)}" class="sidebar-widget mb-60">
+    <!-- Widget: Corsi in partenza (stessa fonte dati usata in home/side-panel) - solo per pagine di corsi/catalogo -->
+    <div th:if="${isCorso and config != null and config.contenutiFront05 != null and !#lists.isEmpty(config.contenutiFront05)}" class="sidebar-widget mb-60">
         <h4 class="sidebar-widget-title mb-25">Corsi in Partenza</h4>
         <div class="sidebar-widget-content">
             <div class="sidebar-widget-post">
@@ -92,6 +77,21 @@
             </div>
         </div>
     </div>
+
+    <!-- Widget: Altre sezioni della stessa categoria di menu - solo per pagine NON di corsi -->
+    <th:block th:each="topSec : ${config != null and config.sezioniFront != null ? config.sezioniFront : {}}"
+              th:if="${!isCorso and topId != null and topSec.id == topId and topSec.subsection != null and !#lists.isEmpty(topSec.subsection)}">
+        <div class="sidebar-widget mb-60">
+            <h4 class="sidebar-widget-title mb-25" th:text="${topSec.titolo}">Categoria</h4>
+            <div class="sidebar-widget-content">
+                <ul style="list-style:none; padding:0; margin:0;">
+                    <li th:each="sib : ${topSec.subsection}" th:if="${sib.menu1.toString() != '0' and (section == null or sib.id != section.id)}" style="margin-bottom:15px;">
+                        <a class="sidebar-widget-list" th:href="@{'/' + ${sib.url}}" th:text="${sib.titolo}">Sezione</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </th:block>
 
 </div>
 </body>

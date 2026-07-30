@@ -1,37 +1,80 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-<!-- sectionType.page3 = 'sectionGallerySidebar' -->
+<!-- sectionType.page3 = 'sectionGallerySidebar'
+     Galleria foto a piena larghezza: tolta la sidebar Info/Corsi in Partenza
+     (fuori contesto su una pagina di sole immagini), griglia più ampia. -->
 <th:block th:fragment="content">
-    <section class="pt-0">
+    <section class="pt-0 pb-100">
         <div class="container">
+
             <div class="row">
-                <div class="col-lg-8 pe-5 lg-pe-3 md-pe-15px md-mb-50">
-
+                <div class="col-lg-10 col-xl-9 mx-auto">
                     <div th:if="${section.testo != null and !section.testo.isEmpty()}" th:utext="${section.testo}" class="mb-40"></div>
+                </div>
+            </div>
 
-                    <div class="row gx-15" th:if="${section.gallery != null and !section.gallery.isEmpty()}">
-                        <div class="col-lg-4 col-md-4 col-6 mb-15" th:each="img : ${section.gallery}">
-                            <a th:href="${config.imagesRepositoryWeb + img.fullpath}"
-                               data-lightbox-gallery="section-gallery"
-                               class="d-block border-radius-20 overflow-hidden">
-                                <img class="w-100"
-                                     th:src="${config.imagesRepositoryWeb + (img.paththumb != null and !img.paththumb.isEmpty() ? img.paththumb : img.fullpath)}"
-                                     th:alt="${img.didascalia != null ? img.didascalia : ''}"/>
-                            </a>
-                            <p class="text-center mt-5 mb-0" style="font-size:14px;" th:if="${img.didascalia != null and !img.didascalia.isEmpty()}" th:text="${img.didascalia}">Didascalia</p>
-                        </div>
-                    </div>
+            <div class="row gx-15" th:if="${section.gallery != null and !section.gallery.isEmpty()}">
+                <div class="col-xl-3 col-lg-4 col-md-4 col-6 mb-25" th:each="img : ${section.gallery}">
+                    <a th:href="${config.imagesRepositoryWeb + img.fullpath}"
+                       data-lightbox-gallery="section-gallery"
+                       class="d-block border-radius-20 overflow-hidden">
+                        <img class="w-100"
+                             th:src="${config.imagesRepositoryWeb + (img.paththumb != null and !img.paththumb.isEmpty() ? img.paththumb : img.fullpath)}"
+                             th:alt="${img.didascalia != null ? img.didascalia : ''}"/>
+                    </a>
+                    <p class="text-center mt-10 mb-0" style="font-size:14px;" th:if="${img.didascalia != null and !img.didascalia.isEmpty()}" th:text="${img.didascalia}">Didascalia</p>
+                </div>
+            </div>
 
-                    <div class="alert alert-light text-center" th:if="${section.gallery == null or section.gallery.isEmpty()}">
+            <div class="row" th:if="${section.gallery == null or section.gallery.isEmpty()}">
+                <div class="col-lg-10 col-xl-9 mx-auto">
+                    <div class="alert alert-light text-center">
                         Nessuna immagine disponibile al momento in questa galleria.
                     </div>
                 </div>
+            </div>
 
-                <div class="col-lg-4 ps-4 lg-ps-15px">
-                    <div th:replace="~{site01/fragments/section_frag/_sidebar :: widget}"></div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         IL NOSTRO TEAM (solo sezione "L'azienda", id 313)
+         Stesso blocco di sectionWebSidebar.html: griglia "Instructors" di
+         Educeet (TeamOne.tsx), dati presi dagli Amministratori del gestionale
+         (stessa fonte/foto di /admin/amministratori), valorizzato da
+         FrontController solo per questa sezione.
+         ============================================ -->
+    <section class="it-team-area gray-bg pt-80 pb-90 z-index-1" th:if="${team != null and !team.isEmpty()}">
+        <div class="container">
+
+            <div class="it-team-section-title-wrap z-index-1 mb-60">
+                <div class="row align-items-end">
+                    <div class="col-lg-8 col-md-9">
+                        <div class="it-team-section-title-box">
+                            <span class="it-section-subtitle yellow-style">Chi siamo</span>
+                            <h2 class="it-section-title">Le persone che rendono <br class="d-none d-lg-block"/> grande il nostro team</h2>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <div class="row gx-25">
+                <div class="col-xxl-2 col-xl-3 col-lg-3 col-md-4 col-sm-6" th:each="admin : ${team}">
+                    <div class="it-team-item text-center p-relative mb-35">
+                        <div class="it-team-content-box">
+                            <div class="it-team-content">
+                                <h4 class="it-team-title" th:text="${admin.nome + ' ' + admin.cognome}">Nome Cognome</h4>
+                                <span th:if="${admin.incarico != null and !admin.incarico.isEmpty()}" th:text="${admin.incarico}">Ruolo</span>
+                            </div>
+                        </div>
+                        <div class="it-team-thumb p-relative border-radius-20">
+                            <img class="w-100" th:src="@{${admin.avatar}(v=${#dates.createNow().time})}" th:alt="${admin.nome}"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </section>
 </th:block>

@@ -39,7 +39,7 @@
                         </span>
                     </div>
 
-                    <div th:if="${post.riassunto != null and !post.riassunto.isEmpty()}" class="fw-600 mb-30" style="font-size:18px;" th:text="${post.riassunto}">Riassunto</div>
+                    <div th:if="${post.riassunto != null and !post.riassunto.isEmpty()}" class="fw-600 mb-30" style="font-size:18px;" th:utext="${post.riassunto}">Riassunto</div>
 
                     <div th:if="${post.testo != null and !post.testo.isEmpty()}" th:utext="${post.testo}" class="mb-30"></div>
 

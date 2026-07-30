@@ -547,14 +547,14 @@ public class Section implements Serializable {
      * Verifica se ha gallery
      */
     public boolean hasGallery() {
-        return galleryList != null && !galleryList.isEmpty();
+        return gallery != null && !gallery.isEmpty();
     }
 
     /**
      * Controlla se c'è una gallery
      */
     public Boolean getGalleryCheck() {
-        if (galleryList == null || galleryList.isEmpty()) {
+        if (gallery == null || gallery.isEmpty()) {
             return false;
         }
         return true;
@@ -599,8 +599,8 @@ public class Section implements Serializable {
      * Ottieni immagine dalla gallery per posizione
      */
     public Images getGallery(int pos) {
-        if (galleryList != null && galleryList.size() > pos) {
-            return galleryList.get(pos);
+        if (gallery != null && gallery.size() > pos) {
+            return gallery.get(pos);
         }
         return null;
     }
@@ -610,8 +610,8 @@ public class Section implements Serializable {
      */
     public String getLogo() {
         String foto = "nofoto.jpg";
-        if (getGalleryCheck() && galleryList.size() > 0) {
-            foto = galleryList.get(0).getFullpath();
+        if (getGalleryCheck() && gallery.size() > 0) {
+            foto = gallery.get(0).getFullpath();
         }
         return foto;
     }
@@ -621,8 +621,8 @@ public class Section implements Serializable {
      */
     public String getLogo1() {
         String foto = "nofoto.jpg";
-        if (getGalleryCheck() && galleryList.size() >= 2) {
-            foto = galleryList.get(1).getFullpath();
+        if (getGalleryCheck() && gallery.size() >= 2) {
+            foto = gallery.get(1).getFullpath();
         }
         return foto;
     }
@@ -632,8 +632,8 @@ public class Section implements Serializable {
      */
     public String getLogo2() {
         String foto = "nofoto.jpg";
-        if (getGalleryCheck() && galleryList.size() >= 2) {
-            foto = galleryList.get(2).getFullpath();
+        if (getGalleryCheck() && gallery.size() >= 2) {
+            foto = gallery.get(2).getFullpath();
         }
         return foto;
     }
@@ -643,8 +643,8 @@ public class Section implements Serializable {
      */
     public String getLogo3() {
         String foto = "nofoto.jpg";
-        if (getGalleryCheck() && galleryList.size() >= 3) {
-            foto = galleryList.get(3).getFullpath();
+        if (getGalleryCheck() && gallery.size() >= 3) {
+            foto = gallery.get(3).getFullpath();
         }
         return foto;
     }
@@ -653,8 +653,8 @@ public class Section implements Serializable {
      * Ottieni logo da gallery position
      */
     public String getLogoFromGallery(int position) {
-        if (galleryList != null && galleryList.size() > position) {
-            return galleryList.get(position).getFullpath();
+        if (gallery != null && gallery.size() > position) {
+            return gallery.get(position).getFullpath();
         }
         return "nofoto.jpg";
     }

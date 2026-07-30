@@ -30,7 +30,7 @@
                                     <a class="border-line" th:href="@{'/' + ${articolo.url}}" th:text="${articolo.titolo}">Titolo</a>
                                 </h4>
                                 <div class="postbox-dsc" th:if="${articolo.riassunto != null and !articolo.riassunto.isEmpty()}">
-                                    <p class="mb-25" th:text="${articolo.riassunto}">Riassunto</p>
+                                    <div class="mb-25" th:utext="${articolo.riassunto}">Riassunto</div>
                                 </div>
                                 <a th:href="@{'/' + ${articolo.url}}" class="it-btn-yellow theme-bg">
                                     <span>

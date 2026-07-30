@@ -10,7 +10,9 @@ import com.jplatform_studiodomino.cms.mapper.ContentToDatiBaseMapper;
 import com.jplatform_studiodomino.cms.mapper.ContentToSectionMapper;
 import com.jplatform_studiodomino.cms.repository.ContentRepository;
 import com.jplatform_studiodomino.cms.repository.SectionTypeRepository;
+import com.jplatform_studiodomino.shared.entity.Images;
 import com.jplatform_studiodomino.shared.entity.UtenteEsterno;
+import com.jplatform_studiodomino.shared.service.ImagesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -39,6 +41,7 @@ public class ContentService {
     private final ContentToSectionMapper sectionMapper;
     private final ContentToDatiBaseMapper datiBaseMapper;
     private final SectionTypeRepository sectionTypeRepository;
+    private final ImagesService imagesService;
 
     // ========================================
     // METODI PER SEZIONI
@@ -791,6 +794,7 @@ public class ContentService {
                 }
 
                 Section section = sectionMapper.toSection(content);
+                popolaGallerySezioneMenu(section);
                 loadMenuSubsections(section, idSite, 10, 0);  // ripristinato da 1 a 10
                 menuSections.add(section);
             }
@@ -836,6 +840,7 @@ public class ContentService {
         List<Section> menuSections = sectionMapper.toSectionList(menuContents);
 
         for (Section section : menuSections) {
+            popolaGallerySezioneMenu(section);
             loadMenuSubsections(section, idSite, 10, 0);  // ripristinato da 1 a 10
         }
 
@@ -867,6 +872,29 @@ public class ContentService {
 
         log.warn("No sections found for site: {}", idSite);
         return new Section();
+    }
+
+    /**
+     * Popola il campo "gallery" di una sezione del menu a partire dalla sua
+     * galleryString, così che getLogo()/getLogo1()/etc. (usati dal menu a
+     * immagini in header.html) trovino davvero le immagini caricate dal
+     * manager invece del fallback "nofoto.jpg".
+     */
+    private void popolaGallerySezioneMenu(Section section) {
+        String gs = section.getGalleryString();
+        if (gs == null || gs.isEmpty()) return;
+        List<Images> gallery = new ArrayList<>();
+        for (String part : gs.split("[,;]")) {
+            part = part.trim().replace("(", "").replace(")", "");
+            if (part.isEmpty()) continue;
+            try {
+                Integer imgId = Integer.parseInt(part);
+                imagesService.findById(imgId).ifPresent(gallery::add);
+            } catch (NumberFormatException ignored) {
+                log.warn("ID immagine non valido in galleryString sezione menu {}: {}", section.getId(), part);
+            }
+        }
+        section.setGallery(gallery);
     }
 
     private void loadMenuSubsections(Section section, String idSite, int maxDepth, int currentDepth) {
@@ -910,6 +938,7 @@ public class ContentService {
                 }
 
                 Section subsection = sectionMapper.toSection(content);
+                popolaGallerySezioneMenu(subsection);
                 loadMenuSubsections(subsection, idSite, maxDepth, currentDepth + 1);
                 subsections.add(subsection);
             }
@@ -1077,6 +1106,33 @@ public class ContentService {
         contentRepository.save(content);
     }
 
+    /**
+     * Popola il campo "gallery" di ogni DatiBase a partire dalla sua galleryString.
+     * Il mapper base (ContentToDatiBaseMapper) lascia "gallery" vuoto di default:
+     * senza questo passaggio getLogo()/getLogo2()/getLogo3() non trovano mai
+     * un'immagine reale e cadono sempre sul fallback "nofoto.jpg", anche quando
+     * il contenuto ha davvero delle immagini caricate nella sua tab Immagini
+     * (è lo stesso tipo di bug già risolto per le sezioni nel menu a immagini).
+     */
+    private void popolaGalleryContenuti(List<DatiBase> items) {
+        for (DatiBase item : items) {
+            String gs = item.getGalleryString();
+            if (gs == null || gs.isEmpty()) continue;
+            List<Images> gallery = new ArrayList<>();
+            for (String part : gs.split("[,;]")) {
+                part = part.trim().replace("(", "").replace(")", "");
+                if (part.isEmpty()) continue;
+                try {
+                    Integer imgId = Integer.parseInt(part);
+                    imagesService.findById(imgId).ifPresent(gallery::add);
+                } catch (NumberFormatException ignored) {
+                    log.warn("ID immagine non valido in galleryString contenuto {}: {}", item.getId(), part);
+                }
+            }
+            item.setGallery(gallery);
+        }
+    }
+
     public Page<DatiBase> findContentsBySectionPaged(
             Integer idSito, Integer idRoot, int page, int pageSize,
             String q, LocalDate dal, LocalDate al) {
@@ -1092,6 +1148,7 @@ public class ContentService {
                     contentRepository.findVisibleContentsBySectionFilteredPaged(
                             idSito.toString(), idRoot, qParam, dal, al, pageable);
             List<DatiBase> items = datiBaseMapper.toDatiBaseList(contentPage.getContent());
+            popolaGalleryContenuti(items);
             return new PageImpl<>(
                     items, pageable, contentPage.getTotalElements());
         } else {
@@ -1099,6 +1156,7 @@ public class ContentService {
                     contentRepository.findVisibleContentsBySectionPaged(
                             idSito.toString(), idRoot, pageable);
             List<DatiBase> items = datiBaseMapper.toDatiBaseList(contentPage.getContent());
+            popolaGalleryContenuti(items);
             return new PageImpl<>(
                     items, pageable, contentPage.getTotalElements());
         }
