@@ -1,3 +1,12 @@
+/* Palette Domino Potenza — Bordeaux / oro tenue (sovrascrive il tema Educeet di default) */
+:root {
+    --it-theme-1: #6E1F35; /* bordeaux - colore primario */
+    --it-theme-3: #2B0F1A; /* bordeaux scuro - sfondi/testi scuri */
+    --it-theme-4: #8A7A6E; /* grigio caldo neutro */
+    --it-theme-5: #C9A24B; /* oro tenue - accento secondario */
+    --it-theme-6: #B98B4E; /* oro/bronzo - accento terziario */
+}
+
 .it-about-experience-box h5 span {
     font-size: 40px !important;
 }
@@ -24,12 +33,12 @@
 
 
 .slider-range div {
-    background: #03594e !important;
+    background: #6E1F35 !important;
 }
 
 
 .it-shop-widget-filter-btn {
-    background: #03594e;
+    background: #6E1F35;
     color: #fff;
     border: none;
     padding: 10px 20px;
@@ -46,7 +55,7 @@
   bottom: -5px;
   left: 0;
   height: 3px;
-  background-color: #FE8235 !important; /* or your active tab color */
+  background-color: #C9A24B !important; /* or your active tab color */
   transition: all 0.3s ease;
   display: none; /* hidden initially, JS will show it */
 }
@@ -55,7 +64,7 @@
   z-index: 1;
   position: relative;
   color: var(--it-common-white);
-  background-color: #FE8235 !important;
+  background-color: #C9A24B !important;
   border-radius: 50px;
 
 }
