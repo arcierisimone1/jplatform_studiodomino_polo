@@ -35,6 +35,18 @@ $(document).ready(function(){
         });
     }
 
+
+        // Elenco anagrafica utenti (CRM)
+        if ($('#elencoAnagraficaTabella').length > 0
+            && $('#elencoAnagraficaTabella tbody tr').not('.riga-vuota').length > 0) {
+            initDataTable('#elencoAnagraficaTabella', {
+                order: [[1, 'asc']],
+                columnDefs: [
+                    { orderable: false, targets: [0, 3] }
+                ]
+            });
+        }
+
     // Tabelle nelle tab - inizializzate lazy al primo click
     document.querySelectorAll('button[data-bs-toggle="tab"]').forEach(function(tabBtn) {
         tabBtn.addEventListener('shown.bs.tab', function(e) {

@@ -380,9 +380,6 @@ public class FileManagerController {
         return result;
     }
 
-    // =====================================================================
-    // UPLOAD IMMAGINE DA TINYMCE (drag&drop / incolla dentro l'editor)
-    // =====================================================================
     @PostMapping("/upload-tinymce")
     @ResponseBody
     public Map<String, Object> uploadImageTinyMce(
