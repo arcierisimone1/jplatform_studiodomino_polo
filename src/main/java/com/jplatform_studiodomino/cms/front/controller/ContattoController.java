@@ -2,7 +2,9 @@ package com.jplatform_studiodomino.cms.front.controller;
 
 import com.jplatform_studiodomino.cms.admin.service.EmailSenderService;
 import com.jplatform_studiodomino.cms.service.CommentoService;
+import com.jplatform_studiodomino.crm.service.AnagraficaService;
 import com.jplatform_studiodomino.shared.config.Configurazione;
+import com.jplatform_studiodomino.shared.entity.UtenteEsterno;
 import com.jplatform_studiodomino.shared.service.ConfigurazioneService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -12,6 +14,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * Riceve l'invio del form "Richiedi Informazioni" (fragment
@@ -25,11 +33,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class ContattoController {
 
     private static final String DEFAULT_RETURN = "/front/370/Contatti";
-    private static final String EMAIL_NOTIFICA_STAFF = "segreteria@studiodomino.com";
+    private static final String EMAIL_NOTIFICA_STAFF = "mseverino@studiodomino.com";
 
     private final ConfigurazioneService configurazioneService;
     private final CommentoService commentoService;
     private final EmailSenderService emailSenderService;
+    private final AnagraficaService anagraficaService;
 
     @PostMapping("/contatti/invia")
     public String invia(
@@ -49,6 +58,15 @@ public class ContattoController {
 
         String redirect = (returnUrl != null && !returnUrl.isBlank()) ? returnUrl : DEFAULT_RETURN;
 
+        // dati scritti dall'utente: li rimandiamo indietro se qualcosa non va
+        Map<String, String> datiForm = new LinkedHashMap<>();
+        datiForm.put("nome", nome);
+        datiForm.put("cognome", cognome);
+        datiForm.put("email", email);
+        datiForm.put("telefono", telefono);
+        datiForm.put("messaggioInformativo", messaggioInformativo);
+        datiForm.put("terms_conditions", terms_conditions);
+
         try {
             // ===== VERIFICA CAPTCHA =====
             Object sessionSum = session.getAttribute("captchaSum");
@@ -63,17 +81,41 @@ public class ContattoController {
             if (!captchaOk) {
                 redirectAttributes.addFlashAttribute("contattoErrore",
                         "Codice di controllo errato, riprova.");
-                return "redirect:" + redirect;
+                redirectAttributes.addFlashAttribute("captchaErrore", true);
+                redirectAttributes.addFlashAttribute("contattoForm", datiForm);
+                return "redirect:" + redirect + "#informazioniGeneriche";
             }
 
             // ===== VERIFICA PRIVACY =====
             if (terms_conditions == null || terms_conditions.isBlank()) {
                 redirectAttributes.addFlashAttribute("contattoErrore",
                         "Devi accettare l'informativa privacy per inviare la richiesta.");
-                return "redirect:" + redirect;
+                redirectAttributes.addFlashAttribute("contattoForm", datiForm);
+                return "redirect:" + redirect + "#informazioniGeneriche";
             }
 
             Configurazione config = configurazioneService.getOrCreateConfiguration(request);
+
+            // ===== ANAGRAFICA: riusa quella esistente per email, o creane una nuova =====
+            Integer idAnagrafica = null;
+            String emailTrim = email != null ? email.trim() : "";
+            if (!emailTrim.isBlank()) {
+                idAnagrafica = anagraficaService.getIdByEmail(emailTrim);
+                if (idAnagrafica == null) {
+                    UtenteEsterno nuovoUtente = new UtenteEsterno();
+                    nuovoUtente.setNome(nome != null ? nome.trim() : "");
+                    nuovoUtente.setCognome(cognome != null ? cognome.trim() : "");
+                    nuovoUtente.setEmail(emailTrim);
+                    nuovoUtente.setUsername(emailTrim);
+                    nuovoUtente.setTelefono(telefono != null ? telefono.trim() : "");
+                    nuovoUtente.setPassword(String.valueOf(Math.abs(new Random().nextInt()) % 1000000));
+                    nuovoUtente.setDatacreazione(LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+                    nuovoUtente.setDataultimoaccesso("");
+                    UtenteEsterno creato = anagraficaService.crea(nuovoUtente);
+                    idAnagrafica = creato.getId();
+                    log.info("Nuova anagrafica creata da form contatti: id={} email={}", idAnagrafica, emailTrim);
+                }
+            }
 
             String oggettoFinale = (oggetto != null && !oggetto.isBlank()) ? oggetto : "Informazioni generali";
             String testoMessaggio = oggettoFinale + " : " + (messaggioInformativo != null ? messaggioInformativo.trim() : "");
@@ -87,6 +129,7 @@ public class ContattoController {
                     "0",
                     "web");
             commento.setL1(telefono != null ? telefono.trim() : "");
+            commento.setIduser(idAnagrafica != null ? String.valueOf(idAnagrafica) : "");
             commentoService.save(commento);
 
             // ===== NOTIFICA STAFF VIA EMAIL =====
@@ -132,6 +175,8 @@ public class ContattoController {
             log.error("Errore invio form contatti", e);
             redirectAttributes.addFlashAttribute("contattoErrore",
                     "Errore durante l'invio della richiesta, riprova più tardi.");
+            redirectAttributes.addFlashAttribute("contattoForm", datiForm);
+
         }
 
         return "redirect:" + redirect;
