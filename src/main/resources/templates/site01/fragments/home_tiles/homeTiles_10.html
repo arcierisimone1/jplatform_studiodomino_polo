@@ -50,23 +50,24 @@
                 .uni-panel:hover::after { opacity: 1; }
 
                 .uni-panel .cta {
-                    position: absolute;
-                    left: 26px;
-                    bottom: 22px;
-                    z-index: 2;
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 6px;
-                    font-size: 14px;
-                    font-weight: 700;
-                    opacity: 0;
-                    transform: translateX(-6px);
-                    transition: opacity .3s ease .12s, transform .3s ease .12s;
-                }
-                .uni-panel:hover .cta {
-                    opacity: 1;
-                    transform: translateX(0);
-                }
+    position: absolute;
+    right: 26px;
+    bottom: 22px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    opacity: 0;
+    transform: translateX(6px);
+    transition: opacity .3s ease .12s, transform .3s ease .12s;
+}
+
+.uni-panel:hover .cta {
+    opacity: 1;
+    transform: translateX(0);
+}
                 @media (max-width: 768px) {
                     .uni-strip { flex-direction: column; height: auto; }
                     .uni-panel { flex: none !important; height: 200px; }

@@ -155,6 +155,16 @@ public class UtenteService {
         return utenteRepository.findAll();
     }
 
+    public Utente findByNomeCompleto(String nomeCompleto) {
+        if (nomeCompleto == null || nomeCompleto.isBlank()) {
+            return null;
+        }
+        return getAllUtenti().stream()
+                .filter(u -> nomeCompleto.trim().equalsIgnoreCase(u.getNomeCompleto().trim()))
+                .findFirst()
+                .orElse(null);
+    }
+
     /**
      * Crea nuovo utente
      */

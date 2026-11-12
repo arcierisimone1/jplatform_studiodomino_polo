@@ -64,6 +64,10 @@
             <th:block th:replace="~{site01/fragments/document_frag/dettaglioPersona :: content}"></th:block>
         </th:block>
 
+        <th:block th:case="'dettaglioBlog'">
+            <th:block th:replace="~{site01/fragments/document_frag/dettaglioBlog :: content}"></th:block>
+        </th:block>
+
         <!-- Fallback: se page4 non combacia con nessun caso, mostra comunque il contenuto -->
         <th:block th:case="*">
             <th:block th:replace="~{site01/fragments/document_frag/default :: content}"></th:block>

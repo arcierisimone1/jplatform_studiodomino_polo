@@ -16,8 +16,8 @@
         /* card altezza uniforme: colonna flex, titolo clamp 2 righe, riassunto clamp 3 righe, bottone in fondo */
         /* immagine altezza fissa (aspect-ratio) e object-fit:cover: cosi' tutte le foto hanno la stessa dimensione qualsiasi sia la foto originale caricata */
         .it-blog-item-equal { display: flex; flex-direction: column; height: 100%; width: 100%; }
-        .it-blog-item-equal .it-blog-thumb { aspect-ratio: 16 / 9; }
-        .it-blog-item-equal .it-blog-thumb img { width: 100%; height: 100%; object-fit: cover; }
+                /* immagine intera senza tagli, come in sectionListSidebar */
+        .it-blog-item-equal .it-blog-thumb img { width: 100%; height: auto; display: block; }
         .it-blog-item-equal .it-blog-content { display: flex; flex-direction: column; flex-grow: 1; }
         .it-blog-item-equal .it-blog-title { overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
         .it-blog-item-equal .it-blog-btn { margin-top: auto; }

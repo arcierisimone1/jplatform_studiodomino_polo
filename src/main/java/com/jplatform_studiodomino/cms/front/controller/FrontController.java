@@ -301,6 +301,18 @@ public class FrontController {
             model.addAttribute("section", section);
             model.addAttribute("contents", section.getContenuti());
 
+            // ===== SEZIONI SORELLE (per la sidebar "fratelli") =====
+            if (section.getIdParent() != null && !section.getIdParent().isBlank() && !"0".equals(section.getIdParent())) {
+                try {
+                    String idSite = config.getSito().getId().toString();
+                    model.addAttribute("sezioniFratelli", contentService.findSubsections(idSite, section.getIdParent()));
+                    contentService.findSectionById(Integer.parseInt(section.getIdParent()), idSite)
+                            .ifPresent(padre -> model.addAttribute("sezionePadre", padre));
+                } catch (Exception e) {
+                    log.warn("Errore caricamento sezioni sorelle per sezione {}", pid, e);
+                }
+            }
+
             // ===== TEAM AZIENDALE (solo per la sezione "L'azienda", id 313) =====
             // Mostra gli Amministratori del gestionale come "il nostro team",
             // riusando gli stessi dati/foto già gestiti in /admin/amministratori.
@@ -309,6 +321,7 @@ public class FrontController {
             if (section.getId() != null && section.getId() == 313) {
                 try {
                     List<Utente> team = utenteService.getAllUtenti().stream()
+                            .filter(u -> !"0".equals(u.getRole3()))
                             .sorted((a, b) -> {
                                 String ca = a.getCognome() != null ? a.getCognome() : "";
                                 String cb = b.getCognome() != null ? b.getCognome() : "";
@@ -375,11 +388,28 @@ public class FrontController {
             }
 
             loadDocumentExtraTag(document, contentBase, parentSection, config);
-
             config.setActualDocument(document);
             model.addAttribute("post", document);
             model.addAttribute("content", document);
-            if (parentSection != null) model.addAttribute("parentSection", parentSection);
+
+            Utente autore = utenteService.findByNomeCompleto(document.getModificatoDa());
+            model.addAttribute("autore", autore);
+            if (parentSection != null) {
+                model.addAttribute("parentSection", parentSection);
+                try {
+                    String orderBy = "datasql desc";
+                    List<DatiBase> tuttiContenuti = contentService.findContentsBySection(
+                            config.getSito().getId(), parentSection.getId(), null, orderBy, null);
+                    int idx = -1;
+                    for (int i = 0; i < tuttiContenuti.size(); i++) {
+                        if (tuttiContenuti.get(i).getId().equals(document.getId())) { idx = i; break; }
+                    }
+                    if (idx > 0) model.addAttribute("contenutoPrecedente", tuttiContenuti.get(idx - 1));
+                    if (idx >= 0 && idx < tuttiContenuti.size() - 1) model.addAttribute("contenutoSuccessivo", tuttiContenuti.get(idx + 1));
+                } catch (Exception e) {
+                    log.warn("Errore calcolo articolo precedente/successivo per documento {}: {}", pid, e.getMessage());
+                }
+            }
             model.addAttribute("breadcrumb", contentService.buildBreadcrumbForContent(
                     document, config.getSito().getId().toString()));
 
