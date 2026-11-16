@@ -540,6 +540,14 @@ public interface ContentRepository extends JpaRepository<Content, Integer> {
             Pageable pageable
     );
 
+    @Query("SELECT c FROM Content c WHERE c.idSite = :idSite AND c.idRoot = :idRoot " +
+            "AND (c.stato = '1' OR c.stato = '3') AND c.privato = '0'")
+    Page<Content> findVisibleContentsBySectionPagedSorted(
+            @Param("idSite") String idSite,
+            @Param("idRoot") Integer idRoot,
+            Pageable pageable
+    );
+
     @Query("SELECT COUNT(c) FROM Content c WHERE c.idSite = :idSite AND c.idRoot = :idRoot " +
             "AND (c.stato = '1' OR c.stato = '3') AND c.privato = '0' " +
             "AND (LOWER(c.titolo) LIKE LOWER(CONCAT('%', :q, '%')) " +

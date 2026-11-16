@@ -16,10 +16,7 @@ import com.jplatform_studiodomino.shared.service.ImagesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +39,8 @@ public class ContentService {
     private final ContentToDatiBaseMapper datiBaseMapper;
     private final SectionTypeRepository sectionTypeRepository;
     private final ImagesService imagesService;
+
+    private static final int SAFETY_FETCH_CAP = 2000;
 
     // ========================================
     // METODI PER SEZIONI
@@ -645,8 +644,24 @@ public class ContentService {
 
         List<Content> contents;
 
+        boolean alreadySorted = false;
+
         if ("id_root".equalsIgnoreCase(fieldFilter)) {
             contents = new ArrayList<>();
+
+            int fetchLimit = SAFETY_FETCH_CAP;
+            if (maxResults != null && !maxResults.isEmpty()) {
+                try {
+                    int mr = Integer.parseInt(maxResults);
+                    if (mr > 0) fetchLimit = mr;
+                } catch (NumberFormatException ignored) {
+                    // lascia il fetchLimit di sicurezza (2000)
+                }
+            }
+
+            boolean random = isRandomOrder(orderBy);
+            Sort sort = random ? Sort.by(Sort.Direction.ASC, "id") : buildSort(orderBy);
+
             if (valueFilter != null && !valueFilter.trim().isEmpty()) {
                 String[] parts = valueFilter.split(",");
                 for (String p : parts) {
@@ -654,15 +669,24 @@ public class ContentService {
                     if (t.isEmpty()) continue;
                     try {
                         Integer idRoot = Integer.parseInt(t);
-                        List<Content> one = contentRepository.findPublishedContentsBySectionNoOrder(
-                                idSito.toString(), idRoot
-                        );
+                        List<Content> one = contentRepository.findVisibleContentsBySectionPagedSorted(
+                                idSito.toString(), idRoot, PageRequest.of(0, fetchLimit, sort)
+                        ).getContent();
                         contents.addAll(one);
                     } catch (NumberFormatException e) {
                         log.warn("Invalid id_root token: {}", t);
                     }
                 }
             }
+
+            if (random) {
+                java.util.Collections.shuffle(contents);
+            } else {
+                contents.sort(buildComparator(orderBy));
+            }
+
+            alreadySorted = true;
+
         } else if ("id".equalsIgnoreCase(fieldFilter)) {
             contents = new ArrayList<>();
             if (valueFilter != null && !valueFilter.trim().isEmpty()) {
@@ -681,7 +705,9 @@ public class ContentService {
             contents = contentRepository.findPublicContents(idSito.toString());
         }
 
-        contents = sortContents(contents, orderBy);
+        if (!alreadySorted) {
+            contents = sortContents(contents, orderBy);
+        }
         contents = dedupeById(contents);
 
         if (maxResults != null && !maxResults.isEmpty()) {
@@ -703,6 +729,63 @@ public class ContentService {
             if (c != null && c.getId() != null) map.putIfAbsent(c.getId(), c);
         }
         return new ArrayList<>(map.values());
+    }
+
+    private Sort buildSort(String orderBy) {
+        if (orderBy == null || orderBy.isBlank()) {
+            return Sort.by(Sort.Direction.ASC, "id");
+        }
+        String ob = orderBy.trim().toLowerCase();
+
+        if (ob.contains("datasql")) {
+            return ob.contains("desc")
+                    ? Sort.by(Sort.Direction.DESC, "datasql").and(Sort.by(Sort.Direction.ASC, "id"))
+                    : Sort.by(Sort.Direction.ASC, "datasql").and(Sort.by(Sort.Direction.ASC, "id"));
+        }
+        if (ob.contains("position")) {
+            return ob.contains("desc")
+                    ? Sort.by(Sort.Direction.DESC, "position").and(Sort.by(Sort.Direction.ASC, "id"))
+                    : Sort.by(Sort.Direction.ASC, "position").and(Sort.by(Sort.Direction.ASC, "id"));
+        }
+        if (ob.contains("titolo")) {
+            return ob.contains("desc")
+                    ? Sort.by(Sort.Direction.DESC, "titolo").and(Sort.by(Sort.Direction.ASC, "id"))
+                    : Sort.by(Sort.Direction.ASC, "titolo").and(Sort.by(Sort.Direction.ASC, "id"));
+        }
+
+        return Sort.by(Sort.Direction.ASC, "id");
+    }
+
+    private Comparator<Content> buildComparator(String orderBy) {
+        if (orderBy == null || orderBy.isBlank()) {
+            return Comparator.comparing(Content::getId);
+        }
+        String ob = orderBy.trim().toLowerCase();
+
+        if (ob.contains("datasql")) {
+            Comparator<Content> c = Comparator.comparing(Content::getDatasql,
+                    Comparator.nullsLast(Comparator.naturalOrder()));
+            if (ob.contains("desc")) c = c.reversed();
+            return c.thenComparing(Content::getId);
+        }
+        if (ob.contains("position")) {
+            Comparator<Content> c = Comparator.comparing(Content::getPosition,
+                    Comparator.nullsLast(Comparator.naturalOrder()));
+            if (ob.contains("desc")) c = c.reversed();
+            return c.thenComparing(Content::getId);
+        }
+        if (ob.contains("titolo")) {
+            Comparator<Content> c = Comparator.comparing(Content::getTitolo,
+                    Comparator.nullsLast(Comparator.naturalOrder()));
+            if (ob.contains("desc")) c = c.reversed();
+            return c.thenComparing(Content::getId);
+        }
+
+        return Comparator.comparing(Content::getId);
+    }
+
+    private boolean isRandomOrder(String orderBy) {
+        return orderBy != null && orderBy.trim().equalsIgnoreCase("rand()");
     }
 
     private List<Content> sortContents(List<Content> contents, String orderBy) {
